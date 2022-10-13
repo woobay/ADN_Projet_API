@@ -1,0 +1,11 @@
+POST http://localhost:4000/newpost
+Content-Type: application/json
+
+{
+    "title": "Un autre autre",
+    "description": "Du texte vraiment different avec plein de mots cool la description de mon post que je suis en train de creer",
+    "created_by": "marie"
+}
+
+###
+GET http://localhost:4000/allPosts
