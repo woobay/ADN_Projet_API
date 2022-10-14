@@ -1,5 +1,6 @@
 {
   "name": "ADN_Projet_API",
+  "engines": { "node": "v16.17.1" },
   "version": "1.0.0",
   "description": "Api pour siteweb ADN",
   "main": "index.js",
