@@ -9,14 +9,14 @@ dotenv.config({path: './config.env'})
 
 const port = process.env.PORT || 4000
 
-const DATABASE_LOCAL = process.env.DATABASE_LOCAL
+const MONGODB_URL = process.env.MONGODB_URL
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 app.use(routes)
 
-mongoose.connect(DATABASE_LOCAL,{ useNewUrlParser: true })
+mongoose.connect(MONGODB_URL,{ useNewUrlParser: true })
 .then(()=>{console.log('you are connected to ...')})
 .catch(()=>{console.log("You are not connected")});
 
