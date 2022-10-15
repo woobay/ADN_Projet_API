@@ -1,5 +1,8 @@
 const Post = require("../models/post");
 
+//TODO ID d
+
+
 
 exports.getAllPosts = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10
