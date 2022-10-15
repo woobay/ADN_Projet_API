@@ -1,7 +1,68 @@
-# ADN_Projet
+# ADN API 
 
-Lien: 
 
-Drive: https://drive.google.com/drive/folders/16pVKSeQTPn9nUd0RnPy2IjTrPJqhi20n?usp=sharing <br>
-Figma: https://www.figma.com/file/RrnpjVWrsbyRJyy8V3h2wO/ADN_Projet?node-id=0%3A1 <br>
-Trello: https://trello.com/invite/b/gGR8VTPU/d581cd1aecd746c2aeed7b9fde34db17/projetprod2 <br>
+## Install
+
+    yarn install
+
+## Run the app
+
+    nodemon src/api/index.js
+
+
+
+# REST API
+
+The list of all endpoints for the API
+
+## Get
+
+### Request
+
+`GET all posts`
+
+    https://adnapinodejs.herokuapp.com/allposts
+
+### Response
+
+    "message": "POST_RETRIEVED_SUCCESSFULLY",
+    "post": [
+        {
+            "_id": "634ab5913cadea56ea33ea55",
+            "title": "ww",
+            "pictures": [],
+            "description": "ww",
+            "supported_by": [],
+            "created_by": "ww",
+            "created_at": "2022-10-15T13:28:49.105Z",
+            "__v": 0
+        },
+
+## Create a new Thing
+
+### Request
+
+`POST create a post`
+
+    https://adnapinodejs.herokuapp.com/newpost
+
+    {
+    "title": "ww",
+    "description": "ww",
+    "created_by": "ww"
+    }   
+
+### Response
+    {
+
+        "message": "POST_ADDED_SUCCESFULLY",
+        "post": {
+            "_id": "634ab5913cadea56ea33ea55",
+            "title": "ww",
+            "pictures": [],
+            "description": "ww",
+            "supported_by": [],
+            "created_by": "ww",
+            "created_at": "2022-10-15T13:28:49.105Z",
+            "__v": 0
+    }

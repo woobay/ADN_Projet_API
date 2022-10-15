@@ -1,0 +1,11 @@
+POST http://localhost:4000/newpost
+Content-Type: application/json
+
+{
+    "title": "dfg",
+    "description": "Du vraiment hot vraiment different avec plein de mots cool la description de mon post que je suis en train de creer",
+    "created_by": "gab"
+}
+
+###
+GET http://localhost:4000/allPosts
