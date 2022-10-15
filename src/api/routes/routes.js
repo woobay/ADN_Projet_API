@@ -6,7 +6,7 @@ const postController = require('../controllers/postController')
 
 router.post('/newpost', postController.addPost)
 
-router.get('/allPosts', postController.getAllPosts)
+router.get('/allposts', postController.getAllPosts)
 
 
 
