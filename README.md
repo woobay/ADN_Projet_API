@@ -38,7 +38,7 @@ The list of all endpoints for the API
             "__v": 0
         },
 
-## Create a new Thing
+## POST
 
 ### Request
 
