@@ -1,11 +1,11 @@
 const express = require('express')
-const routes = require('./routes/routes')
+const routes = require('./src/api/routes/routes')
 
 app = express()
 
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
-dotenv.config({path: './.env'})
+dotenv.config()
 
 const port = process.env.PORT || 4000
 
