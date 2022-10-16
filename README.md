@@ -7,7 +7,7 @@
 
 ## Run the app
 
-    nodemon src/api/index.js
+    nodemon 
 
 
 
