@@ -9,3 +9,7 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/allPosts
+
+
+###
+GET http://localhost:3000/allPosts/634ab5913cadea56ea33ea55
