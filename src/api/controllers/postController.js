@@ -87,3 +87,43 @@ exports.addPost = async (req,res) => {
     }
 
 }
+
+exports.getPostById = async (req, res) => {
+    try {
+      if (!req.params.id || req.params.id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: "L'id du post est invalide"
+        })
+        return
+      }
+      Post.findById(req.params.id, (err, post) => {
+        if (err) {
+          res.status(500).send({
+            errorCode: 'CANNOT_FIND_POST',
+            message: "Le post n'a pas pu être trouvé"
+          })
+          return
+        } else {
+          if (post === null) {
+            res.status(500).send({
+              errorCode: 'CANNOT_FIND_POST',
+              message: "Le post n'a pas pu être trouvé"
+            })
+            return
+          }
+          res.status(200).send({
+            message: 'POST_RETRIEVED_SUCCESSFULLY',
+            post
+          })
+          return
+        }
+      })
+    } catch (e) {
+      res.status(500).send({
+        errorCode: 'SERVER_ERROR',
+        message: 'An error occurred while retrieving post'
+      })
+      return
+    }
+  }
