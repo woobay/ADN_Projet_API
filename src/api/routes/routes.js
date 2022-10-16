@@ -8,6 +8,8 @@ router.post('/newpost', postController.addPost)
 
 router.get('/allposts', postController.getAllPosts)
 
+router.get('/allposts/:id', postController.getPostById)
+
 
 
 
