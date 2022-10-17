@@ -13,3 +13,23 @@ GET http://localhost:3000/allPosts
 
 ###
 GET http://localhost:3000/allPosts/634ab5913cadea56ea33ea55
+
+
+###
+POST http://localhost:3000/users/signup
+Content-Type: application/json
+
+{
+    "username": "marie",
+    "email": "marie@gmail.com",
+    "password": "salut"
+}
+
+###
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+    "email": "marie@gmail.com",
+    "password": "salut"
+}

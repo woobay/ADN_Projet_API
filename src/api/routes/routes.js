@@ -13,4 +13,10 @@ router.get('/allposts/:id', postController.getPostById)
 
 
 
+router.post('/users/signup', userController.signup)
+router.post('/users/login', userController.login)
+
+
+
+
 module.exports = router;
