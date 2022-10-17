@@ -83,7 +83,6 @@ exports.addPost = async (req,res) => {
         })
         return
     }
-
 }
 
 exports.getPostById = async (req, res) => {

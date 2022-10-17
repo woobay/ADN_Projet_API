@@ -28,7 +28,7 @@ exports.getAllFollowers = async (req, res) => {
                 res.status(200).send({
                     message: 'POST_RETRIEVED_SUCCESSFULLY',
                     followers,
-                    totalPages: Math.ceil(amtOfPost / limit)
+                    totalPages: Math.ceil(amtOfFollowers / limit)
                 })
                 return
             }
@@ -43,38 +43,38 @@ exports.getAllFollowers = async (req, res) => {
 }
 
 
-// exports.addPost = async (req,res) => {
-//     try {
-//         if (!req.body.title || !req.body.description || !req.body.created_by) {
-//             res.status(400).send({
-//                 errorCode: 'MISSING_PARAMETERS',
-//                 message: 'Title, description and created_by are mendatory'
-//             })
-//             return
-//         }
+exports.addFollower = async (req,res) => {
+    try {
+        if (!req.body.user_id || !req.body.post_id) {
+            res.status(400).send({
+                errorCode: 'MISSING_PARAMETERS',
+                message: 'USER_ID and POST_ID is mandatory'
+            })
+            return
+        }
 
-//         const post = new Post({ ...req.body})
-//         post.save((err, post) => {
-//             if (err) {
-//               res.status(500).send({
-//                   errorCode: "SERVER_ERROR",
-//                   message: 'An error occured while adding the post'
-//               })
-//               return
-//             } else {
-//              res.status(200).send({
-//                 message: 'POST_ADDED_SUCCESFULLY',
-//                 post
-//             })
-//             return
-//         }
-//     })
+        const follower = new Followers({ ...req.body})
+        follower.save((err, follower) => {
+            if (err) {
+              res.status(500).send({
+                  errorCode: "SERVER_ERROR",
+                  message: 'An error occured while adding the post'
+              })
+              return
+            } else {
+             res.status(200).send({
+                message: 'Follower successfully added',
+                follower
+            })
+            return
+        }
+    })
  
-//     } catch (e) {
-//         res.status(500).send({
-//             errorCode: 'SERVER_ERROR',
-//             message: 'An error occurred while adding the post'
-//         })
-//         return
-//     }
-// }
+    } catch (e) {
+        res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while adding the follower'
+        })
+        return
+    }
+}
