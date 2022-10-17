@@ -20,9 +20,9 @@ POST http://localhost:3000/users/signup
 Content-Type: application/json
 
 {
-    "username": "Francis",
-    "email": "francis@gmail.com",
-    "password": "allo"
+    "username": "marie",
+    "email": "marie@gmail.com",
+    "password": "salut"
 }
 
 ###
@@ -30,6 +30,6 @@ POST http://localhost:3000/users/login
 Content-Type: application/json
 
 {
-    "email": "woob@gmail.com",
-    "password": "password"
+    "email": "marie@gmail.com",
+    "password": "salut"
 }

@@ -1,12 +1,13 @@
 const User = require('../models/user')
+const bcrypt = require('bcryptjs')
+
 
 exports.signup = async (req, res) => {
     const newUser = new User()
 
     newUser.username = req.body.username
     newUser.email = req.body.email
-    newUser.password = newUser.generateHash(req.body.password)
-
+    newUser.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8))
     newUser.save(err => {
         if (err) {
             return err
@@ -17,16 +18,13 @@ exports.signup = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-    console.log(req.body.email)
+    
     const user = await User.find({email: req.body.email})
-    
-    
-    console.log(user)
-    if(user.validPassword(req.body.password)){
+
+    if(bcrypt.compareSync(req.body.password, user[0].password )){
         console.log("Logged in")
     } else {
             console.log("wrong")
     }
 }
-
 

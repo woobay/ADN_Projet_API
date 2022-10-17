@@ -12,12 +12,6 @@ const userSchema = new mongoose.Schema({}).add({
     posts: [{type: String}]
 })
 
-userSchema.methods.validPassword = function (password) {
-    return bcrypt.compareSync(password, this.password)
-}
 
-userSchema.methods.generateHash = (password) => {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8))
-} 
 module.exports = mongoose.model('User', userSchema)
 
