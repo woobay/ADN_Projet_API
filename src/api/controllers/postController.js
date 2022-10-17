@@ -1,7 +1,5 @@
 const Post = require("../models/post");
 
-//TODO ID d
-
 
 
 exports.getAllPosts = async (req, res) => {
@@ -41,7 +39,7 @@ exports.getAllPosts = async (req, res) => {
     } catch (e) {
         res.status(500).send({
             errorCode: 'SERVER_ERROR',
-            message: 'An error occurred while retrieving ski spots'
+            message: 'An error occurred while retrieving posts'
           })
           return
     }
