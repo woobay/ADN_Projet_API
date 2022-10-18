@@ -10,7 +10,7 @@ router.get('/allposts', postController.getAllPosts)
 router.get('/allposts/:id', postController.getPostById)
 
 router.post('/follower/addfollower/', followerController.addFollower)
-router.get('/follower/getall/:post_id', followerController.getAllFollowers)
+router.get('/follower/post/:post_id', followerController.getFollowerByPost)
 
 
 router.post('/users/signup', userController.signup)

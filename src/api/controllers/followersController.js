@@ -1,12 +1,9 @@
 const Followers = require("../models/postFollowers");
 
-exports.getAllFollowers = async (req, res) => {
-
+exports.getFollowerByPost = async (req, res) => {
     const amtOfFollowers = await Followers.countDocuments()
-
     try {
         Followers.find({ post_id: req.params.post_id }, (err, followers) => {
-       
             if (err) {
                 res.status(500).send({
                     errorCode: "SERVER_ERROR",
