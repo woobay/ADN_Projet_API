@@ -28,6 +28,34 @@ exports.getFollowerByPost = async (req, res) => {
     }
 }
 
+exports.getFollowerByUser = async (req, res) => {
+    const amtOfpostFollowed = await Followers.countDocuments()
+    try {
+        Followers.find({ user_id: req.params.user_id }, (err, postFollowed) => {
+            if (err) {
+                res.status(500).send({
+                    errorCode: "SERVER_ERROR",
+                    message: 'An error occured while retriving postFollowed'
+                })
+                return
+            } else {
+                res.status(200).send({
+                    message: 'POST_RETRIEVED_SUCCESSFULLY',
+                    postFollowed,
+                    amtOfpostFollowed
+                })
+                return
+            }
+        })
+    } catch (e) {
+        res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while retrieving Post Followed'
+          })
+          return
+    }
+}
+
 
 exports.addFollower = async (req,res) => {
     console.log(req.body);
@@ -98,3 +126,4 @@ const deletePost = async (req, res) => {
       return
     }
   }
+
