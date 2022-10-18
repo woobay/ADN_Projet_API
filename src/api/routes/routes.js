@@ -5,12 +5,13 @@ const postController = require('../controllers/postController')
 const followerController = require('../controllers/followersController')
 
 
-router.post('/newpost', postController.addPost)
-router.get('/allposts', postController.getAllPosts)
-router.get('/allposts/:id', postController.getPostById)
+router.post('/post/newpost', postController.addPost)
+router.get('/post/allPost', postController.getAllPosts)
+router.get('/post/onePost/:id', postController.getPostById)
 
 router.post('/follower/addfollower/', followerController.addFollower)
-router.get('/follower/post/:post_id', followerController.getFollowerByPost)
+router.get('/follower/postfollowers/:post_id', followerController.getFollowerByPost)
+router.get('/follower/userfollowed/:user_id', followerController.getFollowerByUser)
 
 
 router.post('/users/signup', userController.signup)
