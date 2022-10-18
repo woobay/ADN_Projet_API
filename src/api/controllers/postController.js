@@ -126,9 +126,9 @@ exports.getPostById = async (req, res) => {
   }
 
 
-  exports.deletePost = async (req, res) => {
+exports.deletePost = async (req, res) => {
     try {
-      SkiSpot.findByIdAndRemove(req.params.id, (err, post) => {
+      Post.findByIdAndRemove(req.params.id, (err, post) => {
         if (err) {
           res.status(500).send({
             errorCode: 'SERVER_ERROR',
@@ -136,16 +136,17 @@ exports.getPostById = async (req, res) => {
           })
           return
         } else {
-          if (skiSpot === null) {
+          if (post === null) {
             res.status(500).send({
-              errorCode: 'CANNOT_FIND_SKI_SPOT',
+              errorCode: 'CANNOT_FIND_POST',
               message: "Le post n'a pas pu être trouvé"
             })
             return
           }
   
           res.status(200).send({
-            message: 'Post Delete Successfolly'
+            message: 'Post Delete Successfolly',
+            post
           })
           return
         }

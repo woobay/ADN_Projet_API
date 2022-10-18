@@ -63,3 +63,6 @@ Content-Type: application/json
     "description": "TEST DELETE",
     "created_by": "TEST DELETE"
 }
+
+###
+POST http://localhost:3000/post/delete/634f1f5263dcf06ab205e61a
