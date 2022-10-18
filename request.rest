@@ -33,3 +33,20 @@ Content-Type: application/json
     "email": "marie@gmail.com",
     "password": "salut"
 }
+
+###
+POST http://localhost:3000/follower/addfollower
+Content-Type: application/json
+
+{
+    "user_id": "634c5c669816831c6314934d",
+    "post_id": "63486c18be167567450be3e0"
+}
+
+
+###
+GET http://localhost:3000/follower/getall
+
+
+###
+GET http://localhost:3000/follower/getall/63486c18be167567450be3e0
