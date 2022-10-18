@@ -9,8 +9,8 @@ router.post('/newpost', postController.addPost)
 router.get('/allposts', postController.getAllPosts)
 router.get('/allposts/:id', postController.getPostById)
 
-router.post('/follower/addfollower', followerController.addFollower)
-router.get('/follower/getall', followerController.getAllFollowers)
+router.post('/follower/addfollower/', followerController.addFollower)
+router.get('/follower/getall/:post_id', followerController.getAllFollowers)
 
 
 router.post('/users/signup', userController.signup)
