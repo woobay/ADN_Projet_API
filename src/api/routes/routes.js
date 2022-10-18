@@ -8,6 +8,7 @@ const followerController = require('../controllers/followersController')
 router.post('/post/newpost', postController.addPost)
 router.get('/post/allPost', postController.getAllPosts)
 router.get('/post/onePost/:id', postController.getPostById)
+router.delete('/post/delete/:id', postController.deletePost)
 
 router.post('/follower/addfollower/', followerController.addFollower)
 router.get('/follower/postfollowers/:post_id', followerController.getFollowerByPost)

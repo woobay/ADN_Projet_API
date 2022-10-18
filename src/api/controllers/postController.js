@@ -124,3 +124,37 @@ exports.getPostById = async (req, res) => {
       return
     }
   }
+
+
+  exports.deletePost = async (req, res) => {
+    try {
+      SkiSpot.findByIdAndRemove(req.params.id, (err, post) => {
+        if (err) {
+          res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while deleting post'
+          })
+          return
+        } else {
+          if (skiSpot === null) {
+            res.status(500).send({
+              errorCode: 'CANNOT_FIND_SKI_SPOT',
+              message: "Le post n'a pas pu être trouvé"
+            })
+            return
+          }
+  
+          res.status(200).send({
+            message: 'Post Delete Successfolly'
+          })
+          return
+        }
+      })
+    } catch (e) {
+      res.status(500).send({
+        errorCode: 'SERVER_ERROR',
+        message: 'An error occurred while deleting post'
+      })
+      return
+    }
+  }
