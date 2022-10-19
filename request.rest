@@ -20,7 +20,7 @@ POST http://localhost:3000/users/signup
 Content-Type: application/json
 
 {
-    "username": "marie",
+    "username": "Test",
     "email": "marie@gmail.com",
     "password": "salut"
 }
@@ -53,3 +53,16 @@ GET http://localhost:3000/follower/postfollowers/63486c18be167567450be3e0
 
 ###
 GET http://localhost:3000/follower/userfollowed/634c5c669816831c6314934d
+
+###
+POST http://localhost:3000/post/newpost
+Content-Type: application/json
+
+{
+    "title": " TEST DELETE ",
+    "description": "TEST DELETE",
+    "created_by": "TEST DELETE"
+}
+
+###
+POST http://localhost:3000/post/delete/634f1f5263dcf06ab205e61a
