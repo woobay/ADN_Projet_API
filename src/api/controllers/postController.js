@@ -58,8 +58,12 @@ exports.addPost = async (req,res) => {
             })
             return
         }
-
-        const post = new Post({ ...req.body})
+        const post = new Post({
+          title: req.body.title,
+          resume: req.body.resume,
+          description: req.body.description,
+          created_by: req.user.userId
+        })
         post.save((err, post) => {
             if (err) {
               res.status(500).send({

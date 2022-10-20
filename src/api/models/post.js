@@ -7,7 +7,10 @@ const postSchema = new mongoose.Schema({}).add({
     resume: {type: String, required: true},
     description: {type: String, required: true},
     created_at: {type: Date, required: true, default: Date.now},
-    created_by: {type: String, required: true}
+    created_by: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true}
 })
 
 
