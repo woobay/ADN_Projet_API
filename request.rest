@@ -1,4 +1,4 @@
-POST http://localhost:3000/newpost
+POST http://localhost:3000/post/newpost
 Content-Type: application/json
 
 {
@@ -20,9 +20,9 @@ POST http://localhost:3000/users/signup
 Content-Type: application/json
 
 {
-    "username": "Test",
-    "email": "marie@gmail.com",
-    "password": "salut"
+    "username": "bla",
+    "email": "bla@gmail.com",
+    "password": "hi"
 }
 
 ###
@@ -30,8 +30,8 @@ POST http://localhost:3000/users/login
 Content-Type: application/json
 
 {
-    "email": "marie@gmail.com",
-    "password": "salut"
+    "email": "bla@gmail.com",
+    "password": "hi"
 }
 
 ###
