@@ -4,11 +4,14 @@ const userController = require('../controllers/userController')
 const postController = require('../controllers/postController')
 const followerController = require('../controllers/followersController')
 const IsAuth = require('../middleware/check-auth')
+const IsAdmin = require('../middleware/check-admin')
 
 
 router.post('/post/newpost',IsAuth, postController.addPost)
-router.get('/post/allPost', postController.getAllPosts)
+router.put('/post/update/:id', IsAuth, postController.updatePost)
+router.delete('/post/delete/:id', IsAuth, IsAdmin, postController.deletePost)
 router.get('/post/onePost/:id', postController.getPostById)
+router.get('/post/allPost', postController.getAllPosts)
 
 router.post('/follower/addfollower/', followerController.addFollower)
 router.get('/follower/postfollowers/:post_id', followerController.getFollowerByPost)

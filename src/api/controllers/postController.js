@@ -1,3 +1,4 @@
+const { findByIdAndUpdate } = require("../models/post");
 const Post = require("../models/post");
 
 
@@ -131,6 +132,7 @@ exports.getPostById = async (req, res) => {
 
 
 exports.deletePost = async (req, res) => {
+  console.log(req.user)
     try {
       Post.findByIdAndRemove(req.params.id, (err, post) => {
         if (err) {
@@ -162,4 +164,49 @@ exports.deletePost = async (req, res) => {
       })
       return
     }
+  }
+
+
+  exports.updatePost = async (req,res) => {
+    const post = await Post.findByIdAndUpdate(req.params.id)
+    try {
+      if (req.user.userId === post.created_by.toString()) {
+        Post.findByIdAndUpdate(req.params.id, req.body,{new: true} ,(err, post) => {
+          if (err) {
+            res.status(500).send({
+              errorCode: 'SERVER_ERROR',
+              message: 'An error occurred while deleting post'
+            })
+            return
+      } else {
+        if (post === null) {
+          res.status(500).send({
+            errorCode: 'CANNOT_FIND_POST',
+            message: "Le post n'a pas pu être trouvé"
+          })
+          return
+        }
+        res.status(200).send({
+          message: 'POST_UPDATED_SUCCESSFULLY',
+          post
+        })
+        return
+      }
+    }
+  )} else {
+    res.status(500).send({
+      errorCode: 'SERVER_ERROR',
+      message: 'An error occurred while deleting post'
+    })
+    return
+  }
+    } catch (e) {
+      res.status(500).send({
+        errorCode: 'SERVER_ERROR',
+        message: 'An error occurred while updating post'
+      })
+      return
+    }
+    
+
   }
