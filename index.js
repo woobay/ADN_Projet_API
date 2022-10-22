@@ -5,7 +5,7 @@ const cors = require('cors')
 
 app = express()
 const corsOption = {
-    origin: 'http://127.0.0.1:5175/login',
+    origin: 'http://127.0.0.1:5175/',
     method: ['GET', 'POST', 'PUT', 'DELETE'],
     credential: true
 }
