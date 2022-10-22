@@ -5,7 +5,7 @@ const cors = require('cors')
 
 app = express()
 const corsOption = {
-    origin: '*',
+    origin: 'http://127.0.0.1:5175/login',
     method: ['GET', 'POST', 'PUT', 'DELETE'],
     credential: true
 }
@@ -18,7 +18,6 @@ const port = process.env.PORT || 4000
 
 const MONGODB_URL = process.env.MONGODB_URL
 
-app.options('*', cors())
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(cors(corsOption))
