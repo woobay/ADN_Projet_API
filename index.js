@@ -18,6 +18,7 @@ const port = process.env.PORT || 4000
 
 const MONGODB_URL = process.env.MONGODB_URL
 
+app.options('*', cors())
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(cors(corsOption))

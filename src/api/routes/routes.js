@@ -5,7 +5,6 @@ const postController = require('../controllers/postController')
 const followerController = require('../controllers/followersController')
 const IsAuth = require('../middleware/check-auth')
 const IsAdmin = require('../middleware/check-admin')
-const cors = require('cors')
 
 
 router.post('/post/newpost',IsAuth, postController.addPost)
@@ -19,7 +18,7 @@ router.get('/follower/postfollowers/:post_id', followerController.getFollowerByP
 router.get('/follower/userfollowed/:user_id', followerController.getFollowerByUser)
 
 
-router.post('/users/signup', cors(), userController.signup)
+router.post('/users/signup', userController.signup)
 router.post('/users/login', userController.login)
 
 
