@@ -10,7 +10,7 @@ const IsAdmin = require('../middleware/check-admin')
 router.post('/post/newpost',IsAuth, postController.addPost)
 router.put('/post/update/:id', IsAuth, postController.updatePost)
 router.delete('/post/delete/:id', IsAuth, IsAdmin, postController.deletePost)
-router.get('/post/search/:keyword', IsAuth, postController.searchByTitle)
+router.get('/post/search/:keyword', postController.searchByTitle)
 router.get('/post/onePost/:id', postController.getPostById)
 router.get('/post/allPost', postController.getAllPosts)
 
