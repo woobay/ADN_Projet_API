@@ -1,9 +1,25 @@
 const Followers = require("../models/postFollowers");
 
 exports.getFollowerByPost = async (req, res) => {
-    const amtOfFollowers = await Followers.countDocuments()
+    const limit = parseInt(req.query.limit) || 20
+    const page = parseInt(req.query.page) || 1
+
+    if (isNaN(limit) || isNaN(page)) {
+        res.status(400).send({
+            errorCode: 'INVALID_PARAMETERS',
+            message: 'Params for pagination must be Interger'
+        })
+        return
+    }
+
     try {
-        Followers.find({ post_id: req.params.post_id }, (err, followers) => {
+        const amtOfFollowers = await Followers.find({ post_id: req.params.post_id })
+
+        Followers.find()
+        .skip(limit * page - limit)
+        .limit(limit)
+        .exec({ post_id: req.params.post_id }, (err, followers) => {
+
             if (err) {
                 res.status(500).send({
                     errorCode: "SERVER_ERROR",
@@ -12,9 +28,9 @@ exports.getFollowerByPost = async (req, res) => {
                 return
             } else {
                 res.status(200).send({
-                    message: 'POST_RETRIEVED_SUCCESSFULLY',
+                    message: 'FOLLOWERS_RETRIEVED_SUCCESSFULLY',
                     followers,
-                    amtOfFollowers
+                    totalPages: Math.ceil(amtOfFollowers.length / limit)
                 })
                 return
             }
@@ -29,7 +45,18 @@ exports.getFollowerByPost = async (req, res) => {
 }
 
 exports.getFollowerByUser = async (req, res) => {
-    const amtOfpostFollowed = await Followers.countDocuments()
+    const limit = parseInt(req.query.limit) || 20
+    const page = parseInt(req.query.page) || 1
+
+    if (isNaN(limit) || isNaN(page)) {
+        res.status(400).send({
+            errorCode: 'INVALID_PARAMETERS',
+            message: 'Params for pagination must be Interger'
+        })
+        return
+    }
+
+    const amtOfpostFollowed = await Followers.find({ user_id: req.params.user_id })
     try {
         Followers.find({ user_id: req.params.user_id }, (err, postFollowed) => {
             if (err) {
@@ -42,7 +69,7 @@ exports.getFollowerByUser = async (req, res) => {
                 res.status(200).send({
                     message: 'POST_RETRIEVED_SUCCESSFULLY',
                     postFollowed,
-                    amtOfpostFollowed
+                    totalPages: Math.ceil(amtOfpostFollowed.length / limit)
                 })
                 return
             }
