@@ -216,6 +216,7 @@ exports.deletePost = async (req, res) => {
       const limit = parseInt(req.query.limit) || 10
       const page = parseInt(req.query.page) || 1
       const keyWord = req.params.keyword
+      const amtOfPosts = await Post.countDocuments({title: {$regex: keyWord, $options: 'i'}})
 
       Post.find({title: {$regex: keyWord, $options: 'i'}}, (err, posts)=> {
         if (err) {
@@ -225,10 +226,10 @@ exports.deletePost = async (req, res) => {
           })
           return
         } else {
-          console.log(posts)
           res.status(201).send({
             message: "SEARCH_COMPLETED",
-            posts
+            posts,
+            totalPages: Math.ceil(amtOfPosts / limit)
           })
         }
       })
