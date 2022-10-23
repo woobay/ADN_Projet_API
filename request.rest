@@ -72,3 +72,6 @@ GET http://localhost:3000/follower/postfollowers/63486c18be167567450be3e0
 
 ###
 GET http://localhost:3000/follower/userfollowed/634c5c669816831c6314934d
+
+###
+GET http://localhost:3000/post/search/des

@@ -18,7 +18,7 @@ exports.getFollowerByPost = async (req, res) => {
         Followers.find()
         .skip(limit * page - limit)
         .limit(limit)
-        .exec({ post_id: req.params.post_id }, (err, followers) => {
+        .exec({ post_id: req.params.post_id }, async (err, followers) => {
 
             if (err) {
                 res.status(500).send({
@@ -27,9 +27,11 @@ exports.getFollowerByPost = async (req, res) => {
                 })
                 return
             } else {
+                const tabUserId = await followers.map(post => post.post_id)
+
                 res.status(200).send({
                     message: 'FOLLOWERS_RETRIEVED_SUCCESSFULLY',
-                    followers,
+                    tabUserId,
                     totalPages: Math.ceil(amtOfFollowers.length / limit)
                 })
                 return
@@ -58,7 +60,7 @@ exports.getFollowerByUser = async (req, res) => {
 
     const amtOfpostFollowed = await Followers.find({ user_id: req.params.user_id })
     try {
-        Followers.find({ user_id: req.params.user_id }, (err, postFollowed) => {
+        Followers.find({ user_id: req.params.user_id }, async (err, postFollowed) => {
             if (err) {
                 res.status(500).send({
                     errorCode: "SERVER_ERROR",
@@ -66,9 +68,11 @@ exports.getFollowerByUser = async (req, res) => {
                 })
                 return
             } else {
+                const tabFollowersId = await postFollowed.map(post => post.post_id)
+
                 res.status(200).send({
                     message: 'POST_RETRIEVED_SUCCESSFULLY',
-                    postFollowed,
+                    tabFollowersId,
                     totalPages: Math.ceil(amtOfpostFollowed.length / limit)
                 })
                 return
