@@ -210,3 +210,41 @@ exports.deletePost = async (req, res) => {
     
 
   }
+
+  exports.searchByTitle = async (req , res) => {
+    try {
+      const limit = parseInt(req.query.limit) || 10
+      const page = parseInt(req.query.page) || 1
+      const keyWord = req.params.keyword
+
+      Post.find({title: {$regex: keyWord, $options: 'i'}}, (err, posts)=> {
+        if (err) {
+          res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while retrieving the user'
+          })
+          return
+        } else {
+          console.log(posts)
+          res.status(201).send({
+            message: "SEARCH_COMPLETED",
+            posts
+          })
+        }
+      })
+      .skip(limit * page - limit)
+      .limit(limit)
+ 
+    } catch (e) {
+      res.status(500).send({
+        errorCode: 'SERVER_ERROR',
+        message: 'An error occurred while retrieving the posts'
+      })
+      return
+    }
+
+
+
+
+
+  }
