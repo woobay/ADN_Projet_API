@@ -15,6 +15,7 @@ router.get('/post/onePost/:id', postController.getPostById)
 router.get('/post/allPost', postController.getAllPosts)
 
 router.post('/follower/addfollower/', followerController.addFollower)
+router.delete('/follower/deletefollower/:user_id/:post_id', followerController.deleteFollower)
 router.get('/follower/postfollowers/:post_id', followerController.getFollowerByPost)
 router.get('/follower/userfollowed/:user_id', followerController.getFollowerByUser)
 

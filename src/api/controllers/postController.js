@@ -17,7 +17,7 @@ exports.getAllPosts = async (req, res) => {
     const amtOfPost = await Post.countDocuments()
 
     try {
-        return Post.find()
+        Post.find()
         .skip(limit * page - limit)
         .limit(limit)
         .sort({created_at: -1})
