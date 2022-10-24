@@ -13,12 +13,12 @@ exports.getFollowerByPost = async (req, res) => {
     }
 
     try {
-        const amtOfFollowers = await Followers.find({ post_id: req.params.post_id })
+        const amtOfFollowers = await Followers.countDocuments({ post_id: req.params.post_id })
 
-        Followers.find()
+        Followers.find({ post_id: req.params.post_id })
         .skip(limit * page - limit)
         .limit(limit)
-        .exec({ post_id: req.params.post_id }, async (err, followers) => {
+        .exec(async(err, followers) => {
 
             if (err) {
                 res.status(500).send({
@@ -32,7 +32,7 @@ exports.getFollowerByPost = async (req, res) => {
                 res.status(200).send({
                     message: 'FOLLOWERS_RETRIEVED_SUCCESSFULLY',
                     tabUserId,
-                    totalPages: Math.ceil(amtOfFollowers.length / limit)
+                    totalPages: Math.ceil(amtOfFollowers / limit)
                 })
                 return
             }
@@ -58,9 +58,12 @@ exports.getFollowerByUser = async (req, res) => {
         return
     }
 
-    const amtOfpostFollowed = await Followers.find({ user_id: req.params.user_id })
+    const amtOfpostFollowed = await Followers.countDocuments({ user_id: req.params.user_id })
     try {
-        Followers.find({ user_id: req.params.user_id }, async (err, postFollowed) => {
+        Followers.find({ user_id: req.params.user_id })
+            .skip(limit * page - limit)
+            .limit(limit)
+            .exec(async (err, postFollowed) => {
             if (err) {
                 res.status(500).send({
                     errorCode: "SERVER_ERROR",
@@ -73,7 +76,7 @@ exports.getFollowerByUser = async (req, res) => {
                 res.status(200).send({
                     message: 'POST_RETRIEVED_SUCCESSFULLY',
                     tabFollowersId,
-                    totalPages: Math.ceil(amtOfpostFollowed.length / limit)
+                    totalPages: Math.ceil(amtOfpostFollowed / limit)
                 })
                 return
             }
@@ -120,6 +123,44 @@ exports.addFollower = async (req,res) => {
         res.status(500).send({
             errorCode: 'SERVER_ERROR',
             message: 'An error occurred while adding the follower'
+        })
+        return
+    }
+}
+
+exports.deleteFollower = async (req,res) => {
+    const user_id = req.params.user_id
+    const post_id = req.params.post_id
+    
+    try {
+        if (!user_id || !post_id) {
+            res.status(400).send({
+                errorCode: 'MISSING_PARAMETERS',
+                message: 'USER_ID and POST_ID is mandatory'
+            })
+            return
+        }
+
+        Followers.deleteOne({user_id: user_id, post_id: post_id}, (err, res) => {
+            if (err) {
+              res.status(500).send({
+                  errorCode: "SERVER_ERROR",
+                  message: 'An error occured while delete a fallower'
+              })
+              return
+            } else {
+             res.status(200).send({
+                message: 'Follower successfully deleted',
+                res
+            })
+            return
+        }
+    })
+ 
+    } catch (e) {
+        res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while delete the follower'
         })
         return
     }
