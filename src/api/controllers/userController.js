@@ -7,7 +7,7 @@ exports.signup = async (req, res) => {
 
     newUser.username = req.body.username
     newUser.email = req.body.email
-    newUser.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8))
+    newUser.password = await bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8))
     newUser.save(err => {
         if (err) {
             return err
