@@ -3,12 +3,16 @@ const router = express.Router();
 const userController = require('../controllers/userController')
 const postController = require('../controllers/postController')
 const followerController = require('../controllers/followersController')
+const IsAuth = require('../middleware/check-auth')
+const IsAdmin = require('../middleware/check-admin')
 
 
-router.post('/post/newpost', postController.addPost)
-router.get('/post/allPost', postController.getAllPosts)
+router.post('/post/newpost',IsAuth, postController.addPost)
+router.put('/post/update/:id', IsAuth, postController.updatePost)
+router.delete('/post/delete/:id', IsAuth, IsAdmin, postController.deletePost)
+router.get('/post/search/:keyword', postController.searchByTitle)
 router.get('/post/onePost/:id', postController.getPostById)
-router.post('/post/delete/:id', postController.deletePost)
+router.get('/post/allPost', postController.getAllPosts)
 
 router.post('/follower/addfollower/', followerController.addFollower)
 router.get('/follower/postfollowers/:post_id', followerController.getFollowerByPost)
@@ -17,8 +21,6 @@ router.get('/follower/userfollowed/:user_id', followerController.getFollowerByUs
 
 router.post('/users/signup', userController.signup)
 router.post('/users/login', userController.login)
-
-
 
 
 

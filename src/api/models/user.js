@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({}).add({
     username: {type: String, required: true},
     email: {type: String, required: true},
     password: {type: String, required: true},
-    admin: Boolean,
+    admin: {type: Boolean, default: false},
     posts: [{type: String}]
 })
 

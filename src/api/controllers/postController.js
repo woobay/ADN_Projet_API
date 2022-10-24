@@ -1,3 +1,4 @@
+const { findByIdAndUpdate } = require("../models/post");
 const Post = require("../models/post");
 
 
@@ -58,8 +59,12 @@ exports.addPost = async (req,res) => {
             })
             return
         }
-
-        const post = new Post({ ...req.body})
+        const post = new Post({
+          title: req.body.title,
+          resume: req.body.resume,
+          description: req.body.description,
+          created_by: req.user.userId
+        })
         post.save((err, post) => {
             if (err) {
               res.status(500).send({
@@ -127,6 +132,7 @@ exports.getPostById = async (req, res) => {
 
 
 exports.deletePost = async (req, res) => {
+  console.log(req.user)
     try {
       Post.findByIdAndRemove(req.params.id, (err, post) => {
         if (err) {
@@ -158,4 +164,88 @@ exports.deletePost = async (req, res) => {
       })
       return
     }
+  }
+
+
+  exports.updatePost = async (req,res) => {
+    const post = await Post.findByIdAndUpdate(req.params.id)
+    try {
+      if (req.user.userId === post.created_by.toString()) {
+        Post.findByIdAndUpdate(req.params.id, req.body,{new: true} ,(err, post) => {
+          if (err) {
+            res.status(500).send({
+              errorCode: 'SERVER_ERROR',
+              message: 'An error occurred while deleting post'
+            })
+            return
+      } else {
+        if (post === null) {
+          res.status(500).send({
+            errorCode: 'CANNOT_FIND_POST',
+            message: "Le post n'a pas pu être trouvé"
+          })
+          return
+        }
+        res.status(200).send({
+          message: 'POST_UPDATED_SUCCESSFULLY',
+          post
+        })
+        return
+      }
+    }
+  )} else {
+    res.status(500).send({
+      errorCode: 'SERVER_ERROR',
+      message: 'An error occurred while deleting post'
+    })
+    return
+  }
+    } catch (e) {
+      res.status(500).send({
+        errorCode: 'SERVER_ERROR',
+        message: 'An error occurred while updating post'
+      })
+      return
+    }
+    
+
+  }
+
+  exports.searchByTitle = async (req , res) => {
+    try {
+      const limit = parseInt(req.query.limit) || 10
+      const page = parseInt(req.query.page) || 1
+      const keyWord = req.params.keyword
+      const amtOfPosts = await Post.countDocuments({title: {$regex: keyWord, $options: 'i'}})
+
+      Post.find({title: {$regex: keyWord, $options: 'i'}}, (err, posts)=> {
+        if (err) {
+          res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while retrieving the user'
+          })
+          return
+        } else {
+          res.status(201).send({
+            message: "SEARCH_COMPLETED",
+            posts,
+            totalPages: Math.ceil(amtOfPosts / limit)
+          })
+        }
+      })
+      .skip(limit * page - limit)
+      .limit(limit)
+ 
+    } catch (e) {
+      res.status(500).send({
+        errorCode: 'SERVER_ERROR',
+        message: 'An error occurred while retrieving the posts'
+      })
+      return
+    }
+
+
+
+
+
   }
