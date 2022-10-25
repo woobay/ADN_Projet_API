@@ -13,10 +13,8 @@ exports.signup = async (req, res) => {
         })
         return
     }
+    const newUser = new User(req.body)
 
-    const newUser = new User()
-    newUser.username = req.body.username
-    newUser.email = req.body.email
     newUser.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8))
     newUser.save((err, user) => {
         if (err) {
@@ -37,7 +35,8 @@ exports.login = async (req, res) => {
         const token = jwt.sign(
             {
               email: user.email,
-              userId: user._id.toString()
+              userId: user._id.toString(),
+              isAdmin: user.admin
             },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
