@@ -1,4 +1,3 @@
-const { findByIdAndUpdate } = require("../models/post");
 const Post = require("../models/post");
 
 
@@ -17,7 +16,8 @@ exports.getAllPosts = async (req, res) => {
     const amtOfPost = await Post.countDocuments()
 
     try {
-        return Post.find()
+        Post.find()
+        .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
         .skip(limit * page - limit)
         .limit(limit)
         .sort({created_at: -1})
@@ -52,7 +52,7 @@ exports.getAllPosts = async (req, res) => {
 
 exports.addPost = async (req,res) => {
     try {
-        if (!req.body.title || !req.body.description || !req.body.created_by) {
+        if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
                 message: 'Title, description and created_by are mendatory'
@@ -60,9 +60,7 @@ exports.addPost = async (req,res) => {
             return
         }
         const post = new Post({
-          title: req.body.title,
-          resume: req.body.resume,
-          description: req.body.description,
+          ...req.body,
           created_by: req.user.userId
         })
         post.save((err, post) => {
@@ -99,7 +97,9 @@ exports.getPostById = async (req, res) => {
         })
         return
       }
-      Post.findById(req.params.id, (err, post) => {
+      Post.find({_id: req.params.id}) 
+        .populate("created_by")
+        .exec((err, post) => {
         if (err) {
           res.status(500).send({
             errorCode: 'CANNOT_FIND_POST',
@@ -132,7 +132,6 @@ exports.getPostById = async (req, res) => {
 
 
 exports.deletePost = async (req, res) => {
-  console.log(req.user)
     try {
       Post.findByIdAndRemove(req.params.id, (err, post) => {
         if (err) {
@@ -170,7 +169,9 @@ exports.deletePost = async (req, res) => {
   exports.updatePost = async (req,res) => {
     const post = await Post.findByIdAndUpdate(req.params.id)
     try {
-      if (req.user.userId === post.created_by.toString()) {
+
+      if (req.user.userId === post.created_by.toString() || req.user.isAdmin == true) {
+
         Post.findByIdAndUpdate(req.params.id, req.body,{new: true} ,(err, post) => {
           if (err) {
             res.status(500).send({
@@ -215,10 +216,24 @@ exports.deletePost = async (req, res) => {
     try {
       const limit = parseInt(req.query.limit) || 10
       const page = parseInt(req.query.page) || 1
+
+      if (isNaN(limit) || isNaN(page)) {
+        res.status(400).send({
+            errorCode: 'INVALID_PARAMETERS',
+            message: 'Params for pagination must be Interger'
+        })
+        return
+    }
+
       const keyWord = req.params.keyword
       const amtOfPosts = await Post.countDocuments({title: {$regex: keyWord, $options: 'i'}})
 
-      Post.find({title: {$regex: keyWord, $options: 'i'}}, (err, posts)=> {
+      Post.find({title: {$regex: keyWord, $options: 'i'}})
+      .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
+      .skip(limit * page - limit)
+      .limit(limit)
+      .sort({created_at: -1})
+      .exec((err, posts)=> {
         if (err) {
           res.status(500).send({
             errorCode: 'SERVER_ERROR',
@@ -233,9 +248,7 @@ exports.deletePost = async (req, res) => {
           })
         }
       })
-      .skip(limit * page - limit)
-      .limit(limit)
- 
+
     } catch (e) {
       res.status(500).send({
         errorCode: 'SERVER_ERROR',
@@ -243,9 +256,4 @@ exports.deletePost = async (req, res) => {
       })
       return
     }
-
-
-
-
-
   }
