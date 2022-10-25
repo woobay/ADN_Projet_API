@@ -92,7 +92,7 @@ exports.getFollowerByUser = async (req, res) => {
 
 
 exports.addFollower = async (req,res) => {
-    console.log(req.body);
+
     try {
         if (!req.body.user_id || !req.body.post_id) {
             res.status(400).send({
@@ -129,11 +129,10 @@ exports.addFollower = async (req,res) => {
 }
 
 exports.deleteFollower = async (req,res) => {
-    const user_id = req.params.user_id
     const post_id = req.params.post_id
     
     try {
-        if (!user_id || !post_id) {
+        if (!post_id) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
                 message: 'USER_ID and POST_ID is mandatory'
@@ -141,7 +140,8 @@ exports.deleteFollower = async (req,res) => {
             return
         }
 
-        Followers.deleteOne({user_id: user_id, post_id: post_id}, (err, res) => {
+        Followers.deleteOne({user_id: req.user.userId, post_id: post_id}, (err, follower) => {
+
             if (err) {
               res.status(500).send({
                   errorCode: "SERVER_ERROR",
@@ -151,7 +151,7 @@ exports.deleteFollower = async (req,res) => {
             } else {
              res.status(200).send({
                 message: 'Follower successfully deleted',
-                res
+                follower
             })
             return
         }

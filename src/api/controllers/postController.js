@@ -1,4 +1,3 @@
-const { findByIdAndUpdate } = require("../models/post");
 const Post = require("../models/post");
 
 
@@ -18,6 +17,7 @@ exports.getAllPosts = async (req, res) => {
 
     try {
         Post.find()
+        .populate("created_by")
         .skip(limit * page - limit)
         .limit(limit)
         .sort({created_at: -1})
@@ -60,9 +60,7 @@ exports.addPost = async (req,res) => {
             return
         }
         const post = new Post({
-          title: req.body.title,
-          resume: req.body.resume,
-          description: req.body.description,
+          ...req.body,
           created_by: req.user.userId
         })
         post.save((err, post) => {
@@ -99,7 +97,9 @@ exports.getPostById = async (req, res) => {
         })
         return
       }
-      Post.findById(req.params.id, (err, post) => {
+      Post.find({_id: req.params.id}) 
+        .populate("created_by")
+        .exec((err, post) => {
         if (err) {
           res.status(500).send({
             errorCode: 'CANNOT_FIND_POST',
@@ -132,7 +132,6 @@ exports.getPostById = async (req, res) => {
 
 
 exports.deletePost = async (req, res) => {
-  console.log(req.user)
     try {
       Post.findByIdAndRemove(req.params.id, (err, post) => {
         if (err) {
@@ -170,7 +169,9 @@ exports.deletePost = async (req, res) => {
   exports.updatePost = async (req,res) => {
     const post = await Post.findByIdAndUpdate(req.params.id)
     try {
-      if (req.user.userId === post.created_by.toString()) {
+
+      if (req.user.userId === post.created_by.toString() || req.user.isAdmin == true) {
+
         Post.findByIdAndUpdate(req.params.id, req.body,{new: true} ,(err, post) => {
           if (err) {
             res.status(500).send({
