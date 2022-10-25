@@ -17,7 +17,7 @@ exports.getAllPosts = async (req, res) => {
 
     try {
         Post.find()
-        .populate("created_by")
+        .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
         .skip(limit * page - limit)
         .limit(limit)
         .sort({created_at: -1})
@@ -52,7 +52,7 @@ exports.getAllPosts = async (req, res) => {
 
 exports.addPost = async (req,res) => {
     try {
-        if (!req.body.title || !req.body.description || !req.body.created_by) {
+        if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
                 message: 'Title, description and created_by are mendatory'
@@ -216,12 +216,23 @@ exports.deletePost = async (req, res) => {
     try {
       const limit = parseInt(req.query.limit) || 10
       const page = parseInt(req.query.page) || 1
+
+      if (isNaN(limit) || isNaN(page)) {
+        res.status(400).send({
+            errorCode: 'INVALID_PARAMETERS',
+            message: 'Params for pagination must be Interger'
+        })
+        return
+    }
+
       const keyWord = req.params.keyword
       const amtOfPosts = await Post.countDocuments({title: {$regex: keyWord, $options: 'i'}})
 
       Post.find({title: {$regex: keyWord, $options: 'i'}})
+      .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
       .skip(limit * page - limit)
       .limit(limit)
+      .sort({created_at: -1})
       .exec((err, posts)=> {
         if (err) {
           res.status(500).send({

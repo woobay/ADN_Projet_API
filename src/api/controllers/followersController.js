@@ -141,7 +141,6 @@ exports.deleteFollower = async (req,res) => {
         }
 
         Followers.deleteOne({user_id: req.user.userId, post_id: post_id}, (err, follower) => {
-
             if (err) {
               res.status(500).send({
                   errorCode: "SERVER_ERROR",
