@@ -218,7 +218,10 @@ exports.deletePost = async (req, res) => {
       const keyWord = req.params.keyword
       const amtOfPosts = await Post.countDocuments({title: {$regex: keyWord, $options: 'i'}})
 
-      Post.find({title: {$regex: keyWord, $options: 'i'}}, (err, posts)=> {
+      Post.find({title: {$regex: keyWord, $options: 'i'}})
+      .skip(limit * page - limit)
+      .limit(limit)
+      .exec((err, posts)=> {
         if (err) {
           res.status(500).send({
             errorCode: 'SERVER_ERROR',
@@ -233,9 +236,7 @@ exports.deletePost = async (req, res) => {
           })
         }
       })
-      .skip(limit * page - limit)
-      .limit(limit)
- 
+
     } catch (e) {
       res.status(500).send({
         errorCode: 'SERVER_ERROR',
@@ -243,9 +244,4 @@ exports.deletePost = async (req, res) => {
       })
       return
     }
-
-
-
-
-
   }
