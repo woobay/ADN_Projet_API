@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({}).add({
     email: {type: String, required: true},
     password: {type: String, required: true},
     admin: {type: Boolean, default: false},
+    created_at: {type: Date, required: true, default: Date.now},
     posts: [{type: String}]
 })
 
