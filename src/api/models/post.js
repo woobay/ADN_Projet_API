@@ -6,6 +6,7 @@ const postSchema = new mongoose.Schema({}).add({
     pictures: {type: [String], optional: true, default: []},
     resume: {type: String, required: true},
     description: {type: String, required: true},
+    city: {type: String, optional: true},
     created_at: {type: Date, required: true, default: Date.now},
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
