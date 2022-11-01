@@ -4,6 +4,16 @@ const jwt = require('jsonwebtoken')
 
 
 exports.signup = async (req, res) => {
+
+    const checkEmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+    if(!checkEmailRegex.test(req.body.email)){
+        res.status(401).send({
+            errorCode: "EMAIL_NOT_VALID",
+            message: 'Email is not Valid'
+        })
+        return
+    }
+
     const user = await User.findOne({$or: [{username: req.body.username}, {email: req.body.email}]})
     if (user) {
         if(user.username == req.body.username) {
