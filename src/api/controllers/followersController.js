@@ -13,10 +13,10 @@ exports.getFollowerByPost = async (req, res) => {
     }
 
     try {
-            if (!req.params.id || req.params.id === 'undefined') {
-        res.status(400).send({
-          errorCode: 'MISSING_PARAMETERS',
-          message: "Missing id"
+        if (!req.params.post_id || req.params.post_id === 'undefined') {
+            res.status(400).send({
+            errorCode: 'MISSING_PARAMETERS',
+            message: "Missing id"
         })
         return
       }
@@ -33,7 +33,7 @@ exports.getFollowerByPost = async (req, res) => {
                 })
                 return
             } else {
-                const tabUserId = followers.map(post => post.post_id)
+                const tabUserId = followers.map(post => post.user_id)
                 res.status(200).send({
                     message: 'FOLLOWERS_RETRIEVED_SUCCESSFULLY',
                     tabUserId,
@@ -65,10 +65,10 @@ exports.getFollowerByUser = async (req, res) => {
 
     const amtOfpostFollowed = await Followers.countDocuments({ user_id: req.params.user_id })
     try {
-            if (!req.params.id || req.params.id === 'undefined') {
-        res.status(400).send({
-          errorCode: 'MISSING_PARAMETERS',
-          message: "Missing id"
+        if (!req.params.user_id || req.params.user_id === 'undefined') {
+            res.status(400).send({
+            errorCode: 'MISSING_PARAMETERS',
+            message: "Missing id"
         })
         return
       }
@@ -101,7 +101,6 @@ exports.getFollowerByUser = async (req, res) => {
           return
     }
 }
-
 
 exports.addFollower = async (req,res) => {
 
@@ -175,6 +174,3 @@ exports.deleteFollower = async (req,res) => {
         return
     }
 }
-
-
-

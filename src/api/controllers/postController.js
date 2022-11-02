@@ -1,7 +1,5 @@
 const Post = require("../models/post");
 
-
-
 exports.getAllPosts = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10
     const page = parseInt(req.query.page) || 1
@@ -45,10 +43,6 @@ exports.getAllPosts = async (req, res) => {
           return
     }
 }
-
-
-
-
 
 exports.addPost = async (req,res) => {
     try {
@@ -130,7 +124,6 @@ exports.getPostById = async (req, res) => {
     }
   }
 
-
 exports.deletePost = async (req, res) => {
     try {
          if (!req.params.id || req.params.id === 'undefined') {
@@ -172,7 +165,6 @@ exports.deletePost = async (req, res) => {
     }
   }
 
-
   exports.updatePost = async (req,res) => {
     try {
        if (!req.params.id || req.params.id === 'undefined') {
@@ -187,6 +179,7 @@ exports.deletePost = async (req, res) => {
       if (req.user.userId === post.created_by.toString()) {
 
         Post.findByIdAndUpdate(req.params.id, req.body, {new: true} ,(err, post) => {
+
           if (err) {
             res.status(500).send({
               errorCode: 'SERVER_ERROR',
@@ -223,7 +216,6 @@ exports.deletePost = async (req, res) => {
       return
     }
     
-
   }
 
   exports.searchByTitle = async (req , res) => {
