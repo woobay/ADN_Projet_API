@@ -13,13 +13,19 @@ exports.getFollowerByPost = async (req, res) => {
     }
 
     try {
+            if (!req.params.id || req.params.id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: "Missing id"
+        })
+        return
+      }
         const amtOfFollowers = await Followers.countDocuments({ post_id: req.params.post_id })
 
         Followers.find({ post_id: req.params.post_id })
         .skip(limit * page - limit)
         .limit(limit)
-        .exec(async(err, followers) => {
-
+        .exec((err, followers) => {
             if (err) {
                 res.status(500).send({
                     errorCode: "SERVER_ERROR",
@@ -27,8 +33,7 @@ exports.getFollowerByPost = async (req, res) => {
                 })
                 return
             } else {
-                const tabUserId = await followers.map(post => post.post_id)
-
+                const tabUserId = followers.map(post => post.post_id)
                 res.status(200).send({
                     message: 'FOLLOWERS_RETRIEVED_SUCCESSFULLY',
                     tabUserId,
@@ -60,10 +65,17 @@ exports.getFollowerByUser = async (req, res) => {
 
     const amtOfpostFollowed = await Followers.countDocuments({ user_id: req.params.user_id })
     try {
+            if (!req.params.id || req.params.id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: "Missing id"
+        })
+        return
+      }
         Followers.find({ user_id: req.params.user_id })
             .skip(limit * page - limit)
             .limit(limit)
-            .exec(async (err, postFollowed) => {
+            .exec((err, postFollowed) => {
             if (err) {
                 res.status(500).send({
                     errorCode: "SERVER_ERROR",
@@ -71,7 +83,7 @@ exports.getFollowerByUser = async (req, res) => {
                 })
                 return
             } else {
-                const tabFollowersId = await postFollowed.map(post => post.post_id)
+                const tabFollowersId = postFollowed.map(post => post.post_id)
 
                 res.status(200).send({
                     message: 'POST_RETRIEVED_SUCCESSFULLY',
@@ -102,7 +114,7 @@ exports.addFollower = async (req,res) => {
             return
         }
 
-        const follower = new Followers({ ...req.body})
+        const follower = new Followers(req.body)
         follower.save((err, follower) => {
             if (err) {
               res.status(500).send({
@@ -129,10 +141,9 @@ exports.addFollower = async (req,res) => {
 }
 
 exports.deleteFollower = async (req,res) => {
-    const post_id = req.params.post_id
-    
     try {
-        if (!post_id) {
+    
+        if (!req.params.post_id) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
                 message: 'USER_ID and POST_ID is mandatory'
@@ -140,7 +151,7 @@ exports.deleteFollower = async (req,res) => {
             return
         }
 
-        Followers.deleteOne({user_id: req.user.userId, post_id: post_id}, (err, follower) => {
+        Followers.deleteOne({user_id: req.user.userId, post_id: req.params.post_id}, (err, follower) => {
             if (err) {
               res.status(500).send({
                   errorCode: "SERVER_ERROR",

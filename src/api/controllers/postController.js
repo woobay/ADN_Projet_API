@@ -93,24 +93,24 @@ exports.getPostById = async (req, res) => {
       if (!req.params.id || req.params.id === 'undefined') {
         res.status(400).send({
           errorCode: 'MISSING_PARAMETERS',
-          message: "L'id du post est invalide"
+          message: "Missing id"
         })
         return
       }
       Post.find({_id: req.params.id}) 
-        .populate("created_by")
+        .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
         .exec((err, post) => {
         if (err) {
           res.status(500).send({
             errorCode: 'CANNOT_FIND_POST',
-            message: "Le post n'a pas pu être trouvé"
+            message: "Couldn't find the post"
           })
           return
         } else {
           if (post === null) {
             res.status(500).send({
               errorCode: 'CANNOT_FIND_POST',
-              message: "Le post n'a pas pu être trouvé"
+              message: "Couldn't find the post"
             })
             return
           }
@@ -133,6 +133,13 @@ exports.getPostById = async (req, res) => {
 
 exports.deletePost = async (req, res) => {
     try {
+         if (!req.params.id || req.params.id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: "Missing id"
+        })
+        return
+      }
       Post.findByIdAndRemove(req.params.id, (err, post) => {
         if (err) {
           res.status(500).send({
@@ -144,13 +151,13 @@ exports.deletePost = async (req, res) => {
           if (post === null) {
             res.status(500).send({
               errorCode: 'CANNOT_FIND_POST',
-              message: "Le post n'a pas pu être trouvé"
+              message: "Couldn't find the post"
             })
             return
           }
   
           res.status(200).send({
-            message: 'Post Delete Successfolly',
+            message: 'Post deleted successfully',
             post
           })
           return
@@ -167,12 +174,19 @@ exports.deletePost = async (req, res) => {
 
 
   exports.updatePost = async (req,res) => {
-    const post = await Post.findByIdAndUpdate(req.params.id)
     try {
+       if (!req.params.id || req.params.id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: "Missing id"
+        })
+        return
+      }
 
-      if (req.user.userId === post.created_by.toString() || req.user.isAdmin == true) {
+    const post = await Post.findByIdAndUpdate(req.params.id)
+      if (req.user.userId === post.created_by.toString()) {
 
-        Post.findByIdAndUpdate(req.params.id, req.body,{new: true} ,(err, post) => {
+        Post.findByIdAndUpdate(req.params.id, req.body, {new: true} ,(err, post) => {
           if (err) {
             res.status(500).send({
               errorCode: 'SERVER_ERROR',
@@ -183,7 +197,7 @@ exports.deletePost = async (req, res) => {
         if (post === null) {
           res.status(500).send({
             errorCode: 'CANNOT_FIND_POST',
-            message: "Le post n'a pas pu être trouvé"
+            message: "Couldn't find the post"
           })
           return
         }
