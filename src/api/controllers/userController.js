@@ -31,6 +31,15 @@ exports.signup = async (req, res) => {
             return
         }
     }
+
+    if (req.body.username.trim() == "") {
+        res.status(401).send({
+            errorCode: "UASERNAME_NOT_VALID",
+            message: 'Username is not Valid'
+        })
+        return
+    }
+
     const newUser = new User(req.body)
 
     newUser.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8))
@@ -86,7 +95,7 @@ exports.login = async (req, res) => {
     } catch (e) {
         res.status(500).send({
             errorCode: 'SERVER_ERROR',
-            message: 'An error occurred while retrieving post'
+            message: 'An error occured with server connection'
           })
           return
     }
