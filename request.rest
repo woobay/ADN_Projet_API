@@ -1,14 +1,16 @@
 POST http://localhost:3000/post/newpost
 Content-Type: application/json
+Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJsYUBnbWFpbC5jb20iLCJ1c2VySWQiOiI2MzUwODg3YjEyMGQ3MGE5Y2NiMDBiNGUiLCJpYXQiOjE2NjY1ODY0NDUsImV4cCI6MTY2NjU5MDA0NX0.wU-uxSa5Xc4dvP_Uo8HQMpNZocE1aCT8sPmZ4WDp45U"
 
 {
     "title": "dfg",
     "description": "Du vraiment hot vraiment different avec plein de mots cool la description de mon post que je suis en train de creer",
-    "created_by": "gab"
+    "created_by": "gab",
+    "resume": "sswwdwd"
 }
 
 ###
-GET http://localhost:3000/allPosts
+GET http://localhost:3000/post/allPost
 
 
 ###
@@ -30,7 +32,7 @@ POST http://localhost:3000/users/login
 Content-Type: application/json
 
 {
-    "email": "bla@gmail.com",
+     "username": "bla",
     "password": "hi"
 }
 
@@ -39,8 +41,8 @@ POST http://localhost:3000/follower/addfollower
 Content-Type: application/json
 
 {
-    "user_id": "634c5c669816831c6314934d",
-    "post_id": "63486c18be167567450be3e0"
+    "user_id": "634d9c96308b8c3bd1d2c929",
+    "post_id": "6352ba2aedd32e9ac4a6cd0f"
 }
 
 
@@ -68,10 +70,13 @@ Content-Type: application/json
 POST http://localhost:3000/post/delete/634f1f5263dcf06ab205e61a
 
 ###
-GET http://localhost:3000/follower/postfollowers/63486c18be167567450be3e0
+GET http://localhost:3000/follower/postfollowers/6352b9a2013b78acc14293c5
 
 ###
 GET http://localhost:3000/follower/userfollowed/634c5c669816831c6314934d
 
 ###
 GET http://localhost:3000/post/search/des
+
+###
+DELETE http://localhost:3000/follower/deletefollower/634d9c96308b8c3bd1d2c929/6352ba2aedd32e9ac4a6cd0f

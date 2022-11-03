@@ -1,7 +1,4 @@
-const { findByIdAndUpdate } = require("../models/post");
 const Post = require("../models/post");
-
-
 
 exports.getAllPosts = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10
@@ -17,7 +14,8 @@ exports.getAllPosts = async (req, res) => {
     const amtOfPost = await Post.countDocuments()
 
     try {
-        return Post.find()
+        Post.find()
+        .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
         .skip(limit * page - limit)
         .limit(limit)
         .sort({created_at: -1})
@@ -46,13 +44,9 @@ exports.getAllPosts = async (req, res) => {
     }
 }
 
-
-
-
-
 exports.addPost = async (req,res) => {
     try {
-        if (!req.body.title || !req.body.description || !req.body.created_by) {
+        if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
                 message: 'Title, description and created_by are mendatory'
@@ -60,9 +54,7 @@ exports.addPost = async (req,res) => {
             return
         }
         const post = new Post({
-          title: req.body.title,
-          resume: req.body.resume,
-          description: req.body.description,
+          ...req.body,
           created_by: req.user.userId
         })
         post.save((err, post) => {
@@ -95,22 +87,24 @@ exports.getPostById = async (req, res) => {
       if (!req.params.id || req.params.id === 'undefined') {
         res.status(400).send({
           errorCode: 'MISSING_PARAMETERS',
-          message: "L'id du post est invalide"
+          message: "Missing id"
         })
         return
       }
-      Post.findById(req.params.id, (err, post) => {
+      Post.find({_id: req.params.id}) 
+        .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
+        .exec((err, post) => {
         if (err) {
           res.status(500).send({
             errorCode: 'CANNOT_FIND_POST',
-            message: "Le post n'a pas pu être trouvé"
+            message: "Couldn't find the post"
           })
           return
         } else {
           if (post === null) {
             res.status(500).send({
               errorCode: 'CANNOT_FIND_POST',
-              message: "Le post n'a pas pu être trouvé"
+              message: "Couldn't find the post"
             })
             return
           }
@@ -130,10 +124,15 @@ exports.getPostById = async (req, res) => {
     }
   }
 
-
 exports.deletePost = async (req, res) => {
-  console.log(req.user)
     try {
+         if (!req.params.id || req.params.id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: "Missing id"
+        })
+        return
+      }
       Post.findByIdAndRemove(req.params.id, (err, post) => {
         if (err) {
           res.status(500).send({
@@ -145,13 +144,13 @@ exports.deletePost = async (req, res) => {
           if (post === null) {
             res.status(500).send({
               errorCode: 'CANNOT_FIND_POST',
-              message: "Le post n'a pas pu être trouvé"
+              message: "Couldn't find the post"
             })
             return
           }
   
           res.status(200).send({
-            message: 'Post Delete Successfolly',
+            message: 'Post deleted successfully',
             post
           })
           return
@@ -166,12 +165,21 @@ exports.deletePost = async (req, res) => {
     }
   }
 
-
   exports.updatePost = async (req,res) => {
-    const post = await Post.findByIdAndUpdate(req.params.id)
     try {
+       if (!req.params.id || req.params.id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: "Missing id"
+        })
+        return
+      }
+
+    const post = await Post.findByIdAndUpdate(req.params.id)
       if (req.user.userId === post.created_by.toString()) {
-        Post.findByIdAndUpdate(req.params.id, req.body,{new: true} ,(err, post) => {
+
+        Post.findByIdAndUpdate(req.params.id, req.body, {new: true} ,(err, post) => {
+
           if (err) {
             res.status(500).send({
               errorCode: 'SERVER_ERROR',
@@ -182,7 +190,7 @@ exports.deletePost = async (req, res) => {
         if (post === null) {
           res.status(500).send({
             errorCode: 'CANNOT_FIND_POST',
-            message: "Le post n'a pas pu être trouvé"
+            message: "Couldn't find the post"
           })
           return
         }
@@ -208,16 +216,30 @@ exports.deletePost = async (req, res) => {
       return
     }
     
-
   }
 
   exports.searchByTitle = async (req , res) => {
     try {
       const limit = parseInt(req.query.limit) || 10
       const page = parseInt(req.query.page) || 1
-      const keyWord = req.params.keyword
 
-      Post.find({title: {$regex: keyWord, $options: 'i'}}, (err, posts)=> {
+      if (isNaN(limit) || isNaN(page)) {
+        res.status(400).send({
+            errorCode: 'INVALID_PARAMETERS',
+            message: 'Params for pagination must be Interger'
+        })
+        return
+    }
+
+      const keyWord = req.params.keyword
+      const amtOfPosts = await Post.countDocuments({title: {$regex: keyWord, $options: 'i'}})
+
+      Post.find({title: {$regex: keyWord, $options: 'i'}})
+      .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
+      .skip(limit * page - limit)
+      .limit(limit)
+      .sort({created_at: -1})
+      .exec((err, posts)=> {
         if (err) {
           res.status(500).send({
             errorCode: 'SERVER_ERROR',
@@ -225,16 +247,14 @@ exports.deletePost = async (req, res) => {
           })
           return
         } else {
-          console.log(posts)
           res.status(201).send({
             message: "SEARCH_COMPLETED",
-            posts
+            posts,
+            totalPages: Math.ceil(amtOfPosts / limit)
           })
         }
       })
-      .skip(limit * page - limit)
-      .limit(limit)
- 
+
     } catch (e) {
       res.status(500).send({
         errorCode: 'SERVER_ERROR',
@@ -242,9 +262,4 @@ exports.deletePost = async (req, res) => {
       })
       return
     }
-
-
-
-
-
   }
