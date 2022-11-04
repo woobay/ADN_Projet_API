@@ -2,7 +2,6 @@ const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-
 exports.signup = async (req, res) => {
 
     const checkEmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
@@ -25,13 +24,12 @@ exports.signup = async (req, res) => {
         }
         if(user.email == req.body.email) {
             res.status(401).send({
-                errorCode: "USER_ALREADY_EXIST",
+                errorCode: "USER_ALREADY_EXISTee",
                 message: 'Email already exist'
             })
             return
         }
     }
-
     if (req.body.username.trim() == "") {
         res.status(401).send({
             errorCode: "UASERNAME_NOT_VALID",
@@ -40,6 +38,13 @@ exports.signup = async (req, res) => {
         return
     }
 
+    if (req.body.passeword != req.body.confirmPasseword) {
+        res.status(401).send({
+            errorCode: "CONFIRMATION_PASSEWORD_NOT_VALID",
+            message: 'Confirmation Passeword is not Valid'
+        })
+        return
+    }
     const newUser = new User(req.body)
 
     newUser.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8))
@@ -100,8 +105,4 @@ exports.login = async (req, res) => {
           return
     }
     
- 
-  
 }
-
-
