@@ -24,7 +24,7 @@ exports.signup = async (req, res) => {
         }
         if(user.email == req.body.email) {
             res.status(401).send({
-                errorCode: "USER_ALREADY_EXISTee",
+                errorCode: "USER_ALREADY_EXIST",
                 message: 'Email already exist'
             })
             return
@@ -37,8 +37,8 @@ exports.signup = async (req, res) => {
         })
         return
     }
-
-    if (req.body.passeword != req.body.confirmPasseword) {
+    
+    if (req.body.password != req.body.confirmPassword) {
         res.status(401).send({
             errorCode: "CONFIRMATION_PASSEWORD_NOT_VALID",
             message: 'Confirmation Passeword is not Valid'

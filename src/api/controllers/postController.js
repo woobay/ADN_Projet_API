@@ -101,6 +101,13 @@ exports.getPostById = async (req, res) => {
           })
           return
         } else {
+          if (post == null) {
+            res.status(400).send({
+              errorCode: 'CANNOT_FIND_POST',
+              message: "Couldn't find the post"
+            })
+            return
+          }
           res.status(200).send({
             message: 'POST_RETRIEVED_SUCCESSFULLY',
             post
@@ -135,6 +142,13 @@ exports.deletePost = async (req, res) => {
           return
         } 
         else {
+          if (post == null) {
+            res.status(400).send({
+              errorCode: 'CANNOT_FIND_POST',
+              message: "Couldn't find the post"
+            })
+            return
+          }
           res.status(200).send({
             message: 'Post deleted successfully',
           })
