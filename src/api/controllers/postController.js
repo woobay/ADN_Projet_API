@@ -91,7 +91,7 @@ exports.getPostById = async (req, res) => {
         })
         return
       }
-      Post.find({_id: req.params.id}) 
+      Post.findById(req.params.id) 
         .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
         .exec((err, post) => {
         if (err) {
@@ -101,8 +101,8 @@ exports.getPostById = async (req, res) => {
           })
           return
         } else {
-          if (post === null) {
-            res.status(500).send({
+          if (post == null) {
+            res.status(400).send({
               errorCode: 'CANNOT_FIND_POST',
               message: "Couldn't find the post"
             })
@@ -140,18 +140,17 @@ exports.deletePost = async (req, res) => {
             message: 'An error occurred while deleting post'
           })
           return
-        } else {
-          if (post === null) {
-            res.status(500).send({
+        } 
+        else {
+          if (post == null) {
+            res.status(400).send({
               errorCode: 'CANNOT_FIND_POST',
               message: "Couldn't find the post"
             })
             return
           }
-  
           res.status(200).send({
             message: 'Post deleted successfully',
-            post
           })
           return
         }
@@ -165,7 +164,7 @@ exports.deletePost = async (req, res) => {
     }
   }
 
-  exports.updatePost = async (req,res) => {
+exports.updatePost = async (req,res) => {
     try {
        if (!req.params.id || req.params.id === 'undefined') {
         res.status(400).send({
@@ -180,13 +179,13 @@ exports.deletePost = async (req, res) => {
 
         Post.findByIdAndUpdate(req.params.id, req.body, {new: true} ,(err, post) => {
 
-          if (err) {
-            res.status(500).send({
-              errorCode: 'SERVER_ERROR',
-              message: 'An error occurred while deleting post'
-            })
-            return
-      } else {
+        if (err) {
+          res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while deleting post'
+          })
+          return
+        } else {
         if (post === null) {
           res.status(500).send({
             errorCode: 'CANNOT_FIND_POST',
@@ -218,7 +217,7 @@ exports.deletePost = async (req, res) => {
     
   }
 
-  exports.searchByTitle = async (req , res) => {
+exports.searchByTitle = async (req , res) => {
     try {
       const limit = parseInt(req.query.limit) || 10
       const page = parseInt(req.query.page) || 1
