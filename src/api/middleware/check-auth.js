@@ -5,7 +5,7 @@ dotenv.config()
 module.exports = (req,res,next) => {
     const authHeader = req.get("Authorization")
     if (!authHeader) {
-        res.status(400).send({
+        res.status(401).send({
             errorCode: 'AUTHORIZATION_DENIED',
             message: 'You need to be authenticated'
         })

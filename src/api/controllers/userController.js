@@ -1,7 +1,7 @@
 const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-
+const { useResolvedPath } = require('react-router-dom')
 
 exports.signup = async (req, res) => {
 
@@ -53,7 +53,8 @@ exports.signup = async (req, res) => {
         }
         res.status(201).send({
             message: "New user created",
-            userId: user._id 
+            userId: user._id, 
+            userName: user.username
         })
     })
 }
@@ -82,7 +83,7 @@ exports.login = async (req, res) => {
               res.status(200).send({
                 message: 'You have logged in successfully',
                 token: token,
-                userId: user._id.toString()
+                userId: user._id.toString(),
               })
     
         } else {
@@ -99,9 +100,49 @@ exports.login = async (req, res) => {
           })
           return
     }
-    
- 
-  
 }
+exports.searchUsers = async (req , res) => {
 
+    try {
+      const limit = parseInt(req.query.limit) || 10
+      const page = parseInt(req.query.page) || 1
 
+      if (isNaN(limit) || isNaN(page)) {
+        res.status(400).send({
+            errorCode: 'INVALID_PARAMETERS',
+            message: 'Params for pagination must be Interger'
+        })
+        return
+    }
+
+      const keyWord = req.params.keyword
+      const key = req.params.key
+
+      User.find({ [key] : keyWord })
+      .skip(limit * page - limit)
+      .limit(limit)
+      .sort({created_at: -1})
+      .exec((err, users)=> {
+        if (err) {
+          res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while retrieving the user'
+          })
+          return
+        } else {
+          res.status(200).send({
+            message: "SEARCH_COMPLETED",
+            users,
+            totalPages: Math.ceil(users.length / limit)
+          })
+        }
+      })
+
+    } catch (e) {
+      res.status(500).send({
+        errorCode: 'SERVER_ERROR',
+        message: 'An error occurred while retrieving the users'
+      })
+      return
+    }
+  }

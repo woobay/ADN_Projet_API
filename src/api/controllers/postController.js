@@ -218,21 +218,20 @@ exports.deletePost = async (req, res) => {
     
   }
 
-  exports.searchByTitle = async (req , res) => {
-    try {
-      const limit = parseInt(req.query.limit) || 10
-      const page = parseInt(req.query.page) || 1
+exports.searchByTitle = async (req , res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10
+    const page = parseInt(req.query.page) || 1
 
-      if (isNaN(limit) || isNaN(page)) {
-        res.status(400).send({
-            errorCode: 'INVALID_PARAMETERS',
-            message: 'Params for pagination must be Interger'
-        })
-        return
+    if (isNaN(limit) || isNaN(page)) {
+      res.status(400).send({
+          errorCode: 'INVALID_PARAMETERS',
+          message: 'Params for pagination must be Interger'
+    })
+      return
     }
 
       const keyWord = req.params.keyword
-      const amtOfPosts = await Post.countDocuments({title: {$regex: keyWord, $options: 'i'}})
 
       Post.find({title: {$regex: keyWord, $options: 'i'}})
       .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
@@ -250,16 +249,16 @@ exports.deletePost = async (req, res) => {
           res.status(201).send({
             message: "SEARCH_COMPLETED",
             posts,
-            totalPages: Math.ceil(amtOfPosts / limit)
+            totalPages: Math.ceil(posts.length / limit)
           })
         }
       })
 
-    } catch (e) {
-      res.status(500).send({
-        errorCode: 'SERVER_ERROR',
-        message: 'An error occurred while retrieving the posts'
-      })
-      return
+  } catch (e) {
+    res.status(500).send({
+      errorCode: 'SERVER_ERROR',
+      message: 'An error occurred while retrieving the posts'
+    })
+    return
     }
   }
