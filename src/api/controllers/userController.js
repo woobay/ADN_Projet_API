@@ -1,7 +1,6 @@
 const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { useResolvedPath } = require('react-router-dom')
 
 exports.signup = async (req, res) => {
 
@@ -31,7 +30,6 @@ exports.signup = async (req, res) => {
             return
         }
     }
-
     if (req.body.username.trim() == "") {
         res.status(401).send({
             errorCode: "UASERNAME_NOT_VALID",
@@ -39,7 +37,14 @@ exports.signup = async (req, res) => {
         })
         return
     }
-
+    
+    if (req.body.password != req.body.confirmPassword) {
+        res.status(401).send({
+            errorCode: "CONFIRMATION_PASSEWORD_NOT_VALID",
+            message: 'Confirmation Passeword is not Valid'
+        })
+        return
+    }
     const newUser = new User(req.body)
 
     newUser.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8))
@@ -100,7 +105,9 @@ exports.login = async (req, res) => {
           })
           return
     }
+
 }
+
 exports.searchUsers = async (req , res) => {
 
     try {
@@ -146,3 +153,4 @@ exports.searchUsers = async (req , res) => {
       return
     }
   }
+
