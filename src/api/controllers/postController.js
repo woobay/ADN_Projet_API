@@ -45,6 +45,8 @@ exports.getAllPosts = async (req, res) => {
 }
 
 exports.addPost = async (req,res) => {
+  console.log(req.file)
+  console.log(req.body)
     try {
         if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
             res.status(400).send({
@@ -55,7 +57,12 @@ exports.addPost = async (req,res) => {
         }
         const post = new Post({
           ...req.body,
-          created_by: req.user.userId
+          created_by: req.user.userId,
+          pictures: {
+            data: req.file.buffer,
+            contentType: req.file.mimetype,
+            filename: req.file.originalname
+          }
         })
         post.save((err, post) => {
             if (err) {
