@@ -231,6 +231,7 @@ exports.searchByTitle = async (req , res) => {
     }
 
       const keyWord = req.params.keyword
+      const amtOfPosts = await Post.countDocuments({title: {$regex: keyWord, $options: 'i'}})
 
       Post.find({title: {$regex: keyWord, $options: 'i'}})
       .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
@@ -248,7 +249,7 @@ exports.searchByTitle = async (req , res) => {
           res.status(201).send({
             message: "SEARCH_COMPLETED",
             posts,
-            totalPages: Math.ceil(posts.length / limit)
+            totalPages: Math.ceil(amtOfPosts / limit)
           })
         }
       })

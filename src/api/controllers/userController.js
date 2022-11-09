@@ -125,6 +125,8 @@ exports.searchUsers = async (req , res) => {
       const keyWord = req.params.keyword
       const key = req.params.key
 
+      const amtOfUsers = await User.countDocuments({[key]: {$regex: keyWord, $options: 'i'}})
+
       User.find({ [key] : keyWord })
       .skip(limit * page - limit)
       .limit(limit)
@@ -140,7 +142,7 @@ exports.searchUsers = async (req , res) => {
           res.status(200).send({
             message: "SEARCH_COMPLETED",
             users,
-            totalPages: Math.ceil(users.length / limit)
+            totalPages: Math.ceil(amtOfUsers / limit)
           })
         }
       })
@@ -153,4 +155,3 @@ exports.searchUsers = async (req , res) => {
       return
     }
   }
-
