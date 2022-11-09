@@ -7,7 +7,7 @@ const IsAuth = require('../middleware/check-auth')
 const IsAdmin = require('../middleware/check-admin')
 const upload = require('../middleware/upload')
 
-router.post('/post/newpost',IsAuth, upload.single('pictures'), postController.addPost)
+router.post('/post/newpost',IsAuth, upload.any('pictures'), postController.addPost)
 router.put('/post/update/:id', IsAuth, postController.updatePost)
 router.delete('/post/delete/:id', IsAuth, IsAdmin, postController.deletePost)
 router.get('/post/search/:keyword', postController.searchByTitle)
