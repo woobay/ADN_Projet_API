@@ -6,7 +6,6 @@ const followerController = require('../controllers/followersController')
 const IsAuth = require('../middleware/check-auth')
 const IsAdmin = require('../middleware/check-admin')
 
-
 router.post('/post/newpost',IsAuth, postController.addPost)
 router.put('/post/update/:id', IsAuth, postController.updatePost)
 router.delete('/post/delete/:id', IsAuth, IsAdmin, postController.deletePost)
@@ -19,11 +18,8 @@ router.delete('/follower/deletefollower/:post_id', IsAuth, followerController.de
 router.get('/follower/postfollowers/:post_id',IsAuth, followerController.getFollowerByPost)
 router.get('/follower/userfollowed/:user_id',IsAuth, followerController.getFollowerByUser)
 
-
 router.post('/users/signup', userController.signup)
 router.post('/users/login', userController.login)
-
-
-
+router.get('/users/search/:key/:keyword', userController.searchUsers)
 
 module.exports = router;

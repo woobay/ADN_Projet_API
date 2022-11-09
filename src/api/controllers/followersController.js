@@ -32,7 +32,8 @@ exports.getFollowerByPost = async (req, res) => {
                     message: 'An error occured while retriving followerss'
                 })
                 return
-            } else {
+            }
+            else {
                 const tabUserId = followers.map(post => post.user_id)
                 res.status(200).send({
                     message: 'FOLLOWERS_RETRIEVED_SUCCESSFULLY',
@@ -105,7 +106,7 @@ exports.getFollowerByUser = async (req, res) => {
 exports.addFollower = async (req,res) => {
 
     try {
-        if (!req.body.user_id || !req.body.post_id) {
+        if (!req.body.post_id) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
                 message: 'USER_ID and POST_ID is mandatory'
@@ -113,7 +114,7 @@ exports.addFollower = async (req,res) => {
             return
         }
 
-        const follower = new Followers(req.body)
+        const follower = new Followers({user_id: req.user.userId, post_id: req.body.post_id})
         follower.save((err, follower) => {
             if (err) {
               res.status(500).send({
@@ -160,7 +161,6 @@ exports.deleteFollower = async (req,res) => {
             } else {
              res.status(200).send({
                 message: 'Follower successfully deleted',
-                follower
             })
             return
         }
