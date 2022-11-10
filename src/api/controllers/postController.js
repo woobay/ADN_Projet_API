@@ -45,9 +45,7 @@ exports.getAllPosts = async (req, res) => {
 }
 
 exports.addPost = async (req,res) => {
-  console.log(req.file)
-  console.log(req.body)
-    try {
+    // try {
         if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
@@ -55,15 +53,37 @@ exports.addPost = async (req,res) => {
             })
             return
         }
+        
+
+        if (!req.files || req.files === 'undefined') {
+          let pictures = []
+            res.status(400).send({
+                errorCode: 'MISSING_PARAMETERS',
+                message: 'Pictures are mendatory'
+            })
+            return
+        } else {
+          
+        pictures = []
+        for (let i = 0; i < req.files.length; i++) {
+          let picture = {
+            data: req.files[i].buffer,
+            contentType: req.files[i].mimetype,
+            filename: Date.now() + req.files[i].originalname
+          }
+          pictures.push(picture)
+        }
+        }
+
+        
+    
         const post = new Post({
           ...req.body,
           created_by: req.user.userId,
-          pictures: {
-            data: req.file.buffer,
-            contentType: req.file.mimetype,
-            filename: req.file.originalname
-          }
+          pictures: pictures
+
         })
+
         post.save((err, post) => {
             if (err) {
               res.status(500).send({
@@ -80,15 +100,20 @@ exports.addPost = async (req,res) => {
         }
     })
  
-    } catch (e) {
-        res.status(500).send({
-            errorCode: 'SERVER_ERROR',
-            message: 'An error occurred while adding the post'
-        })
-        return
-    }
+    // } catch (e) {
+    //     res.status(500).send({
+    //         errorCode: 'SERVER_ERROR',
+    //         message: 'An error occurred while adding the post'
+    //     })
+    //     return
 }
 
+
+
+
+
+
+        
 exports.getPostById = async (req, res) => {
     try {
       if (!req.params.id || req.params.id === 'undefined') {
