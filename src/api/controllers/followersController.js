@@ -1,4 +1,4 @@
-const Followers = require("../models/postFollowers");
+const Post = require('../models/post')
 
 exports.getFollowerByPost = async (req, res) => {
     const limit = parseInt(req.query.limit) || 20
@@ -105,39 +105,49 @@ exports.getFollowerByUser = async (req, res) => {
 
 exports.addFollower = async (req,res) => {
 
-    try {
         if (!req.body.post_id) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
-                message: 'USER_ID and POST_ID is mandatory'
+                message: 'POST_ID is mandatory'
             })
             return
         }
 
-        const follower = new Followers({user_id: req.user.userId, post_id: req.body.post_id})
-        follower.save((err, follower) => {
-            if (err) {
-              res.status(500).send({
-                  errorCode: "SERVER_ERROR",
-                  message: 'An error occured while adding the post'
-              })
-              return
-            } else {
-             res.status(200).send({
-                message: 'Follower successfully added',
-                follower
+        const follower = {
+            user_id: req.user.userId,
+            username: req.user.username,
+        }
+    
+        const post = await Post.findById(req.body.post_id)
+        if (!post) {
+            res.status(404).send({
+                errorCode: 'POST_NOT_FOUND',
+                message: 'Post not found'
             })
             return
-        }
-    })
+        } else {
+            if (post.followers.some(x => x.user_id === req.user.userId)) {
+                res.status(400).send({ 
+                    errorCode: 'ALREADY_FOLLOWED',
+                    message: 'You already followed this post'
+                })
+                
+                return
+
+            } else {
+
+            }}
+
+            
+
+            
+
+
+           
  
-    } catch (e) {
-        res.status(500).send({
-            errorCode: 'SERVER_ERROR',
-            message: 'An error occurred while adding the follower'
-        })
-        return
-    }
+
+
+ 
 }
 
 exports.deleteFollower = async (req,res) => {

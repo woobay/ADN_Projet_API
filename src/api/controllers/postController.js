@@ -42,7 +42,9 @@ exports.getAllPosts = async (req, res) => {
           })
           return
     }
-}
+} 
+
+
 
 exports.addPost = async (req,res) => {
     // try {
@@ -53,8 +55,7 @@ exports.addPost = async (req,res) => {
             })
             return
         }
-        
-
+      
         if (!req.files || req.files === 'undefined') {
           let pictures = []
             res.status(400).send({
@@ -75,8 +76,6 @@ exports.addPost = async (req,res) => {
         }
         }
 
-        
-    
         const post = new Post({
           ...req.body,
           created_by: req.user.userId,
