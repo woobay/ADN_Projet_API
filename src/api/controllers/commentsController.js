@@ -69,6 +69,14 @@ exports.deleteComment = async (req,res) => {
 
             } else {
             const removeIndex = post.comments.findIndex(x => x._id.toString() === req.body.comment_id)
+            if (post.comments[removeIndex].user_id.toString() !== req.user.userId) {
+                res.status(400).send({
+                    errorCode: 'NOT_AUTHORIZED',
+                    message: 'Not authorized to delete this comment'
+                })
+                return
+            
+            } else {
             post.comments.splice(removeIndex, 1)
             await post.save()
             res.status(200).send({
@@ -77,6 +85,7 @@ exports.deleteComment = async (req,res) => {
         })
             
     }
+            }
 }} catch (e) {
         res.status(500).send({
             errorCode: 'SERVER_ERROR',
