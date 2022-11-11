@@ -1,6 +1,7 @@
 const Post = require('../models/post')
 
-exports.addFollower = async (req,res) => {
+exports.AddComment = async (req, res) => {
+
     try {
         if (!req.body.post_id) {
             res.status(400).send({
@@ -10,9 +11,10 @@ exports.addFollower = async (req,res) => {
             return
         }
 
-        const follower = {
+        const comment = {
             user_id: req.user.userId,
             username: req.user.username,
+            comment: req.body.comment
         }
     
         const post = await Post.findById(req.body.post_id)
@@ -23,21 +25,14 @@ exports.addFollower = async (req,res) => {
             })
             return
         } else {
-            if (post.followers.some(x => x.user_id === req.user.userId)) {
-                res.status(400).send({ 
-                    errorCode: 'ALREADY_FOLLOWED',
-                    message: 'You already followed this post'
-                })
-                return
-            } else {
-                post.followers.unshift(follower)
+                post.comments.push(comment)
                 await post.save()
                 res.status(200).send({
                     message: 'FOLLOWED_SUCCESSFULLY',
                     post
                 })
             }}
-} catch (e) {
+catch (e) {
         res.status(500).send({
             errorCode: 'SERVER_ERROR',
             message: 'An error occurred while following post'
@@ -46,12 +41,13 @@ exports.addFollower = async (req,res) => {
     }
     }
 
-exports.deleteFollower = async (req,res) => {
-try{
-   if (!req.body.post_id || !req.body.comment_id) {
+
+exports.deleteComment = async (req,res) => {
+        try{
+   if (!req.body.post_id) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
-                message: 'POST_ID and COMMENT_ID is mandatory'
+                message: 'POST_ID is mandatory'
             })
             return
         }
@@ -64,23 +60,33 @@ try{
             })
             return
         } else {
-            if (!post.followers.some(x => x.user_id === req.user.userId)) {
+            if (!post.comments.some(x => x.user_id === req.user.userId)) {
                 res.status(400).send({ 
-                    errorCode: 'NOT_FOLLOWED',
-                    message: 'Not following this post'
+                    errorCode: 'NO_COMMENT',
+                    message: 'No comment on this post'
                 })
                 return
 
             } else {
-            const removeIndex = post.followers.indexOf(req.user.userId)    
-            post.followers.splice(removeIndex, 1)
+            const removeIndex = post.comments.findIndex(x => x._id.toString() === req.body.comment_id)
+            if (post.comments[removeIndex].user_id.toString() !== req.user.userId) {
+                res.status(400).send({
+                    errorCode: 'NOT_AUTHORIZED',
+                    message: 'Not authorized to delete this comment'
+                })
+                return
+            
+            } else {
+            post.comments.splice(removeIndex, 1)
             await post.save()
             res.status(200).send({
-            message: 'UNFOLLOWED_SUCCESSFULLY',
+            message: 'COMMENT_DELETED_SUCCESSFULLY',
             post
         })
             
-    }}} catch (e) {
+    }
+            }
+}} catch (e) {
         res.status(500).send({
             errorCode: 'SERVER_ERROR',
             message: 'An error occurred while unfollowing post'

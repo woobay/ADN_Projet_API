@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 
 const postSchema = new mongoose.Schema({}).add({
-    id: String,
     title: {type: String, required: true},
     pictures: [{
         data: [Buffer],
@@ -15,7 +14,16 @@ const postSchema = new mongoose.Schema({}).add({
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true}
+        required: true},
+    followers: [{
+        username: {type: String, required: true},
+        user_id: {type: String, required: true},
+        }],
+    comments: [{
+        user_id: {type: String, required: true},
+        username: {type: String, required: true},
+        comment: {type: String, required: true},
+    }]
 })
 
 

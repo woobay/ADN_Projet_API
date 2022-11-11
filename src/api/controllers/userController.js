@@ -80,6 +80,7 @@ exports.login = async (req, res) => {
                 {
                   email: user.email,
                   userId: user._id.toString(),
+                  username: user.username,
                   isAdmin: user.admin
                 },
                 process.env.JWT_SECRET,
@@ -89,6 +90,7 @@ exports.login = async (req, res) => {
                 message: 'You have logged in successfully',
                 token: token,
                 userId: user._id.toString(),
+                username: user.username,
               })
     
         } else {
