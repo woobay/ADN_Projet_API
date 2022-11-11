@@ -157,3 +157,92 @@ exports.searchUsers = async (req , res) => {
       return
     }
   }
+
+  exports.getAllUsers = async (req, res) => {
+     const limit = parseInt(req.query.limit) || 10
+    const page = parseInt(req.query.page) || 1
+
+    if (isNaN(limit) || isNaN(page)) {
+        res.status(400).send({
+            errorCode: 'INVALID_PARAMETERS',
+            message: 'Params for pagination must be Interger'
+        })
+        return
+    }
+    const amtOfPost = await User.countDocuments()
+
+    try {
+        User.find()
+        .select('-password')
+        .skip(limit * page - limit)
+        .limit(limit)
+        .exec((err, users) => {
+            if (err) {
+                res.status(500).send({
+                    errorCode: "SERVER_ERROR",
+                    message: 'An error occured while retriving users'
+                })
+                return
+            } else {
+
+
+
+                res.status(200).send({
+                    message: 'USERS_RETRIEVED_SUCCESSFULLY',
+                    users,
+                    totalPages: Math.ceil(amtOfPost / limit)
+                })
+                return
+            }
+        })
+    } catch (e) {
+        res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while retrieving the users'
+          })
+          return
+    }
+  }
+
+exports.getUserById = async (req, res) => {
+  
+    try {
+      if (!req.params.id || req.params.id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: "Missing id"
+        })
+        return
+      }
+      User.findById(req.params.id) 
+        .select('-password')
+        .exec((err, user) => {
+        if (err) {
+          res.status(500).send({
+            errorCode: 'CANNOT_FIND_USER',
+            message: "Couldn't find the user"
+          })
+          return
+        } else {
+          if (user == null) {
+            res.status(400).send({
+              errorCode: 'CANNOT_FIND_USER',
+              message: "Couldn't find the user"
+            })
+            return
+          }
+          res.status(200).send({
+            message: 'USER_RETRIEVED_SUCCESSFULLY',
+            user
+          })
+          return
+        }
+      })
+    } catch (e) {
+      res.status(500).send({
+        errorCode: 'SERVER_ERROR',
+        message: 'An error occurred while retrieving the user'
+      })
+      return
+    }
+}
