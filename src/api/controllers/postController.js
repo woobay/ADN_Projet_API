@@ -1,4 +1,5 @@
 const Post = require("../models/post");
+const User = require("../models/user");
 
 exports.getAllPosts = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10
@@ -27,6 +28,9 @@ exports.getAllPosts = async (req, res) => {
                 })
                 return
             } else {
+
+
+
                 res.status(200).send({
                     message: 'POST_RETRIEVED_SUCCESSFULLY',
                     post,
@@ -45,9 +49,8 @@ exports.getAllPosts = async (req, res) => {
 } 
 
 
-
 exports.addPost = async (req,res) => {
-    // try {
+    try {
         if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
@@ -83,7 +86,8 @@ exports.addPost = async (req,res) => {
 
         })
 
-        post.save((err, post) => {
+
+        post.save(async (err, post) => {
             if (err) {
               res.status(500).send({
                   errorCode: "SERVER_ERROR",
@@ -91,7 +95,10 @@ exports.addPost = async (req,res) => {
               })
               return
             } else {
-             res.status(200).send({
+              let user = await User.findById(req.user.userId)
+              user.posts.push(post._id)
+              await user.save()
+              res.status(200).send({
                 message: 'POST_ADDED_SUCCESFULLY',
                 post
             })
@@ -99,20 +106,16 @@ exports.addPost = async (req,res) => {
         }
     })
  
-    // } catch (e) {
-    //     res.status(500).send({
-    //         errorCode: 'SERVER_ERROR',
-    //         message: 'An error occurred while adding the post'
-    //     })
-    //     return
+    } catch (e) {
+        res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while adding the post'
+        })
+        return
+}
 }
 
 
-
-
-
-
-        
 exports.getPostById = async (req, res) => {
     try {
       if (!req.params.id || req.params.id === 'undefined') {
@@ -292,4 +295,136 @@ exports.searchByTitle = async (req , res) => {
     })
     return
     }
+}
+
+exports.getPostByUser = async (req, res) => {
+
+  try {
+    const limit = parseInt(req.query.limit) || 10
+    const page = parseInt(req.query.page) || 1
+
+    if (isNaN(limit) || isNaN(page)) {
+      res.status(400).send({
+          errorCode: 'INVALID_PARAMETERS',
+          message: 'Params for pagination must be Interger'
+    })
+      return
+    }
+
+    const amtOfPosts = await Post.countDocuments({created_by: req.params.id})
+
+    Post.find({created_by: {_id : req.params.id}})
+    .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
+    .skip(limit * page - limit)
+    .limit(limit)
+    .sort({created_at: -1})
+    .exec((err, posts)=> {
+      if (err) {
+        res.status(500).send({
+          errorCode: 'SERVER_ERROR',
+          message: 'An error occurred while retrieving the user'
+        })
+        return
+      } else {
+        res.status(201).send({
+          message: "SEARCH_COMPLETED",
+          posts,
+          totalPages: Math.ceil(amtOfPosts / limit)
+        })
+      }
+    })
+
+  } catch (e) {
+    res.status(500).send({
+      errorCode: 'SERVER_ERROR',
+      message: 'An error occurred while retrieving the posts'
+    })
+    return
+    }
+
+
+} 
+
+exports.reportPost = async (req, res) => {
+  try {
+    if (!req.params.id || req.params.id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: 'Missing id'
+        })
+        return
+      }
+
+    const post = await Post.findById(req.params.id)
+    if (post === null) {
+      res.status(400).send({
+        errorCode: 'CANNOT_FIND_POST',
+        message: "Couldn't find the post"
+      })
+      return
+    } else {
+      if (post.reports.includes(req.user.userId)) {
+                res.status(400).send({
+                    errorCode: 'POST_ALREADY_REPORTED',
+                    message: 'Post already reported'
+                })
+                return
+                }
+
+              post.reports.push(req.user.userId)
+              await post.save()
+              res.status(200).send({
+              message: 'POST_REPORTED_SUCCESSFULLY',
+    })
+    return
+    }
+  } catch (e) {
+    res.status(500).send({
+      errorCode: 'SERVER_ERROR',
+      message: 'An error occurred while reporting the post'
+    })
+    return
   }
+}
+
+exports.removeReport = async (req, res) => {
+  try {
+    if (!req.params.id || req.params.id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: 'Missing id'
+        })
+        return
+      }
+
+    const post = await Post.findById(req.params.id)
+    if (post === null) {
+      res.status(400).send({
+        errorCode: 'CANNOT_FIND_POST',
+        message: "Couldn't find the post"
+      })
+      return
+    } else {
+      if (!post.reports.includes(req.user.userId)) {
+                res.status(400).send({
+                    errorCode: 'POST_NOT_REPORTED',
+                    message: 'Post not reported'
+                })
+                return
+                }
+              const index = post.reports.indexOf(req.user.userId)
+              post.reports.splice(index, 1)
+              await post.save()
+              res.status(200).send({
+              message: 'POST_REPORT_REMOVED_SUCCESSFULLY',
+    })
+    return
+    }
+  } catch (e) {
+    res.status(500).send({
+      errorCode: 'SERVER_ERROR',
+      message: 'An error occurred while removing the report'
+    })
+    return
+  }
+}
