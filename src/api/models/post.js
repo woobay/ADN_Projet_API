@@ -27,5 +27,4 @@ const postSchema = new mongoose.Schema({}).add({
     reports: [{type: String}],
 })
 
-
 module.exports = mongoose.model('Post', postSchema)
