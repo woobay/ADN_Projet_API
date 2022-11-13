@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({}).add({
     admin: {type: Boolean, default: false},
     created_at: {type: Date, required: true, default: Date.now},
     posts: [{type: String}],
-    email_confirm: {type: Boolean, default: false}
+    email_confirm: {type: Boolean, default: true}
 })
 
 module.exports = mongoose.model('User', userSchema)
