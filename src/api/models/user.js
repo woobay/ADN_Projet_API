@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({}).add({
     city: {type: String, required: true},
     admin: {type: Boolean, default: false},
     created_at: {type: Date, required: true, default: Date.now},
-    posts: [{type: String}]
+    posts: [{type: String}],
+    email_confirm: {type: Boolean, default: false}
 })
 
 module.exports = mongoose.model('User', userSchema)

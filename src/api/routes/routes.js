@@ -25,6 +25,7 @@ router.delete('/post/comment',IsAuth, commentsController.deleteComment)
 router.get('/users/allusers', IsAuth, userController.getAllUsers)
 router.get('/users/:id', IsAuth, userController.getUserById)
 router.get('/users/search/:key/:keyword', userController.searchUsers)
+router.get('/confirm_email/:id', userController.confimEmail)
 
 // Routes for add followers
 router.post('/follower/addfollower/',IsAuth, followerController.addFollower)
@@ -37,6 +38,5 @@ router.delete('/post/report/:id', IsAuth, postController.removeReport)
 // Routes for sign up and sign in
 router.post('/users/signup', userController.signup)
 router.post('/users/login', userController.login)
-
-
+ 
 module.exports = router;

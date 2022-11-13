@@ -1,7 +1,8 @@
 const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-
+const amailTrap = require('../config/emailTrap')
+console.log(amailTrap);
 exports.signup = async (req, res) => {
 
     const checkEmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
@@ -15,6 +16,7 @@ exports.signup = async (req, res) => {
 
     const user = await User.findOne({$or: [{username: req.body.username}, {email: req.body.email}]})
     if (user) {
+
         if(user.username == req.body.username) {
             res.status(401).send({
                 errorCode: "USER_ALREADY_EXIST",
@@ -56,12 +58,57 @@ exports.signup = async (req, res) => {
             })
             return
         }
+        
+        amailTrap.sendEmail(user.username, user.email, 'http://localhost:3000/confirm_email/' + user._id)
+
         res.status(201).send({
-            message: "New user created",
-            userId: user._id, 
-            userName: user.username
+          message: "New user created",
+          userId: user._id, 
+          userName: user.username
         })
     })
+}
+exports.confimEmail = async (req, res) => {
+  
+  try {
+    if (!req.params.id || req.params.id === 'undefined') {
+      res.status(400).send({
+        errorCode: 'MISSING_PARAMETERS',
+        message: "Missing id"
+      })
+      return
+    }
+    User.findByIdAndUpdate(req.params.id, {email_confirm: true}) 
+      .select('-password')
+      .exec((err, user) => {
+      if (err) {
+        res.status(500).send({
+          errorCode: 'CANNOT_FIND_USER',
+          message: "Couldn't find the user"
+        })
+        return
+      } else {
+        if (user == null) {
+          res.status(400).send({
+            errorCode: 'CANNOT_FIND_USER',
+            message: "Couldn't find the user"
+          })
+          return
+        }
+        res.status(200).send({
+          message: 'USER_RETRIEVED_SUCCESSFULLY_UPDATE',
+          user
+        })
+        return
+      }
+    })
+  } catch (e) {
+    res.status(500).send({
+      errorCode: 'SERVER_ERROR',
+      message: 'An error occurred while retrieving the user'
+    })
+    return
+  }
 }
 
 exports.login = async (req, res) => {
@@ -74,6 +121,14 @@ exports.login = async (req, res) => {
             return
         }
         const user = await User.findOne({username: req.body.username})
+
+        if( user.email_confirm == false) {
+          res.status(400).send({
+            errorCode: 'EMAIL_CONFIRMATION',
+            message: "You must confirm your Email"
+          })
+          return
+        }
 
         if(bcrypt.compareSync(req.body.password, user.password )){
             const token = jwt.sign(
@@ -184,8 +239,6 @@ exports.searchUsers = async (req , res) => {
                 })
                 return
             } else {
-
-
 
                 res.status(200).send({
                     message: 'USERS_RETRIEVED_SUCCESSFULLY',
