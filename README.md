@@ -66,3 +66,7 @@ The list of all endpoints for the API
             "created_at": "2022-10-15T13:28:49.105Z",
             "__v": 0
     }
+    
+    
+    
+### Post
