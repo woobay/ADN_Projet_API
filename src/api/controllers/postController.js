@@ -428,3 +428,15 @@ exports.removeReport = async (req, res) => {
     return
   }
 }
+
+exports.mostLike = async (req, res) => {
+
+    const post = await Post.aggregate([
+        { $unwind: "$followers" },
+        {$group : {_id : "$_id", count: {$sum: 1}}},
+        {$sort: {count: -1}},
+        {$limit: 10}
+    ])
+
+
+}
