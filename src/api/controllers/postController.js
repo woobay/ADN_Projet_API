@@ -428,3 +428,35 @@ exports.removeReport = async (req, res) => {
     return
   }
 }
+
+exports.mostLike = async (req, res) => {
+  try {
+  const post = await Post.aggregate([
+        { $unwind: "$followers" },
+        {$group : {_id : "$_id", count: {$sum: 1}}},
+        {$sort: {count: -1}},
+        {$limit: 1}
+    ])
+
+    const mostLikedPost = await Post.findById(post[0]._id)
+    if (mostLikedPost === null) {
+      res.status(400).send({
+        errorCode: 'CANNOT_FIND_POST',
+        message: "Couldn't find the post"
+      })
+      return
+    } else {
+    res.status(200).send({
+      message: 'MOST_LIKED_POST',
+      mostLikedPost
+    })
+    return
+    }
+  } catch (e) {
+    res.status(500).send({
+      errorCode: 'SERVER_ERROR',
+      message: 'An error occurred while retrieving the most liked post'
+    })
+    return
+  }
+}
