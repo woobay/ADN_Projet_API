@@ -29,7 +29,7 @@ router.get('/users/search/:key/:keyword', userController.searchUsers)
 router.get('/confirm_email/:id', userController.confimEmail)
 
 // Routes for add followers
-router.post('/follower/addfollower/',IsAuth, followerController.addFollower)
+router.post('/follower/addfollower',IsAuth, followerController.addFollower)
 router.delete('/follower/deletefollower', IsAuth, followerController.deleteFollower)
 
 //Routes for report
@@ -40,5 +40,5 @@ router.delete('/post/report/:id', IsAuth, postController.removeReport)
 router.post('/users/signup', userController.signup)
 router.post('/users/login', userController.login)
  
-router.get('/getmostlike', postController.mostLike)
+router.get('/post/getmostlike', postController.mostLike)
 module.exports = router;
