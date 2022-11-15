@@ -25,6 +25,7 @@ router.delete('/post/comment',IsAuth, commentsController.deleteComment)
 router.get('/users/allusers', IsAuth, userController.getAllUsers)
 router.get('/users/:id', IsAuth, userController.getUserById)
 router.get('/users/search/:key/:keyword', userController.searchUsers)
+
 router.get('/confirm_email/:id', userController.confimEmail)
 
 // Routes for add followers
@@ -39,4 +40,5 @@ router.delete('/post/report/:id', IsAuth, postController.removeReport)
 router.post('/users/signup', userController.signup)
 router.post('/users/login', userController.login)
  
+router.get('/getmostlike', postController.mostLike)
 module.exports = router;

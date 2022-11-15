@@ -435,8 +435,7 @@ exports.mostLike = async (req, res) => {
         { $unwind: "$followers" },
         {$group : {_id : "$_id", count: {$sum: 1}}},
         {$sort: {count: -1}},
-        {$limit: 10}
+        {$limit: 3}
     ])
-
-
+    console.log(post)
 }
