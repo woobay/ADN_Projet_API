@@ -24,7 +24,11 @@ const postSchema = new mongoose.Schema({}).add({
         username: {type: String, required: true},
         comment: {type: String, required: true},
     }],
-    reports: [{type: String}],
+    reports: [{
+        user_id: {type: String, required: true},
+        username: {type: String, required: true},
+        comment: {type: String, required: true},
+    }],
 })
 
 module.exports = mongoose.model('Post', postSchema)

@@ -136,7 +136,9 @@ exports.login = async (req, res) => {
                   email: user.email,
                   userId: user._id.toString(),
                   username: user.username,
-                  isAdmin: user.admin
+                  isAdmin: user.admin,
+                  city: user.city,
+                  country: user.country
                 },
                 process.env.JWT_SECRET,
                 { expiresIn: '1h' }

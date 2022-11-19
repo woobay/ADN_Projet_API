@@ -48,10 +48,17 @@ exports.addFollower = async (req,res) => {
 
 exports.deleteFollower = async (req,res) => {
 try{
-   if (!req.body.post_id || !req.body.comment_id) {
+//    if (!req.body.post_id || !req.body.comment_id) {
+//             res.status(400).send({
+//                 errorCode: 'MISSING_PARAMETERS',
+//                 message: 'POST_ID and COMMENT_ID is mandatory'
+//             })
+//             return
+//         }
+        if (!req.body.post_id) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
-                message: 'POST_ID and COMMENT_ID is mandatory'
+                message: 'POST_ID is mandatory'
             })
             return
         }

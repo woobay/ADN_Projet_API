@@ -24,14 +24,24 @@ exports.AddComment = async (req, res) => {
                 message: 'Post not found'
             })
             return
-        } else {
+        } else if(!req.body.report) {
+            console.log("entre");
                 post.comments.push(comment)
                 await post.save()
                 res.status(200).send({
                     message: 'FOLLOWED_SUCCESSFULLY',
                     post
                 })
-            }}
+            }else {
+                console.log("report");
+                post.reports.push(comment)
+                    await post.save()
+                    res.status(200).send({
+                    message: 'FOLLOWED_SUCCESSFULLY',
+                    post
+                })
+            }
+        }
 catch (e) {
         res.status(500).send({
             errorCode: 'SERVER_ERROR',
@@ -40,7 +50,6 @@ catch (e) {
             return
     }
     }
-
 
 exports.deleteComment = async (req,res) => {
         try{
