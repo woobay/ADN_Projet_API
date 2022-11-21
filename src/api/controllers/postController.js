@@ -73,7 +73,7 @@ exports.addPost = async (req,res) => {
           
         for (let i = 0; i < req.files.length; i++) {
           const image = req.files[i]
-          const resize = await sharp(image.buffer).resize({ width: 500}).jpeg({ quality: 80 })
+          const resize = sharp(image.buffer).resize({ width: 500}).jpeg({ quality: 80 })
 
           const formData = new FormData()
           formData.append('image', resize, {
