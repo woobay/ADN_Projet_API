@@ -73,7 +73,7 @@ exports.addPost = async (req,res) => {
           
         for (let i = 0; i < req.files.length; i++) {
           const image = req.files[i]
-          const resize = sharp(image.buffer).resize({ width: 500}).jpeg({ quality: 80 })
+          const resize = sharp(image.buffer).resize({ width: 1000}).jpeg({ quality: 90 })
 
           const formData = new FormData()
           formData.append('image', resize, {
@@ -443,13 +443,13 @@ exports.removeReport = async (req, res) => {
 
 exports.mostLike = async (req, res) => {
   try {
+    console.log("here")
   const post = await Post.aggregate([
         { $unwind: "$followers" },
         {$group : {_id : "$_id", count: {$sum: 1}}},
         {$sort: {count: -1}},
         {$limit: 1}
     ])
-
     const mostLikedPost = await Post.findById(post[0]._id)
     if (mostLikedPost === null) {
       res.status(400).send({
