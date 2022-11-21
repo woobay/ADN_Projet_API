@@ -2,7 +2,8 @@ const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const amailTrap = require('../config/emailTrap')
-console.log(amailTrap);
+
+
 exports.signup = async (req, res) => {
 
     const checkEmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
@@ -136,7 +137,9 @@ exports.login = async (req, res) => {
                   email: user.email,
                   userId: user._id.toString(),
                   username: user.username,
-                  isAdmin: user.admin
+                  isAdmin: user.admin,
+                  city: user.city,
+                  country: user.country
                 },
                 process.env.JWT_SECRET,
                 { expiresIn: '1h' }

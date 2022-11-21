@@ -1,3 +1,6 @@
+const nodeFetch = require('node-fetch')
+const FormData = require('form-data')
+const sharp = require('sharp')
 const Post = require("../models/post");
 const User = require("../models/user");
 
@@ -50,7 +53,8 @@ exports.getAllPosts = async (req, res) => {
 
 
 exports.addPost = async (req,res) => {
-    try {
+  const pictures = []
+    // try {
         if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
@@ -60,7 +64,6 @@ exports.addPost = async (req,res) => {
         }
       
         if (!req.files || req.files === 'undefined') {
-          let pictures = []
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
                 message: 'Pictures are mendatory'
@@ -68,17 +71,26 @@ exports.addPost = async (req,res) => {
             return
         } else {
           
-        pictures = []
         for (let i = 0; i < req.files.length; i++) {
-          let picture = {
-            data: req.files[i].buffer,
-            contentType: req.files[i].mimetype,
-            filename: Date.now() + req.files[i].originalname
-          }
-          pictures.push(picture)
-        }
-        }
+          const image = req.files[i]
+          const resize = sharp(image.buffer).resize({ width: 1000}).jpeg({ quality: 90 })
 
+          const formData = new FormData()
+          formData.append('image', resize, {
+            contentType: image.mimetype,
+            filename: image.originalname
+          }
+          )
+  
+        await nodeFetch('https://images.kalanso.top/image/?api=IZFRYR6C', {
+          method: 'POST',
+          body: formData,
+        }).then(res => res.json())
+        .then(data => {
+        pictures.push('https://images.kalanso.top/' + data.filename)
+        })
+        }
+      }
         const post = new Post({
           ...req.body,
           created_by: req.user.userId,
@@ -106,13 +118,13 @@ exports.addPost = async (req,res) => {
         }
     })
  
-    } catch (e) {
-        res.status(500).send({
-            errorCode: 'SERVER_ERROR',
-            message: 'An error occurred while adding the post'
-        })
-        return
-}
+//     } catch (e) {
+//         res.status(500).send({
+//             errorCode: 'SERVER_ERROR',
+//             message: 'An error occurred while adding the post'
+//         })
+//         return
+// }
 }
 
 
@@ -424,6 +436,45 @@ exports.removeReport = async (req, res) => {
     res.status(500).send({
       errorCode: 'SERVER_ERROR',
       message: 'An error occurred while removing the report'
+    })
+    return
+  }
+}
+
+exports.mostLike = async (req, res) => {
+  try {
+  const post = await Post.aggregate([
+        { $unwind: "$followers" },
+        {$group : {_id : "$_id", count: {$sum: 1}}},
+        {$sort: {count: -1}},
+        {$limit: 1}
+    ])
+    if (post === null || post.length === 0) {
+      res.status(400).send({
+        errorCode: 'CANNOT_FIND_POST',
+        message: "Couldn't find the post"
+      })
+      return
+    }
+
+    const mostLikedPost = await Post.findById(post[0]._id)
+    if (mostLikedPost === null) {
+      res.status(400).send({
+        errorCode: 'CANNOT_FIND_POST',
+        message: "Couldn't find the post"
+      })
+      return
+    } else {
+    res.status(200).send({
+      message: 'MOST_LIKED_POST',
+      mostLikedPost
+    })
+    return
+    }
+  } catch (e) {
+    res.status(500).send({
+      errorCode: 'SERVER_ERROR',
+      message: 'An error occurred while retrieving the most liked post'
     })
     return
   }
