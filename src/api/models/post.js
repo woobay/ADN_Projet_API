@@ -3,9 +3,7 @@ const mongoose = require('mongoose')
 const postSchema = new mongoose.Schema({}).add({
     title: {type: String, required: true},
     pictures: [{
-        data: [Buffer],
-        contentType: String,
-        filename: String,
+        type: String
         }],
     resume: {type: String, required: true},
     description: {type: String, required: true},

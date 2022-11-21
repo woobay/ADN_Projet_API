@@ -1,3 +1,6 @@
+const nodeFetch = require('node-fetch')
+const FormData = require('form-data')
+const sharp = require('sharp')
 const Post = require("../models/post");
 const User = require("../models/user");
 
@@ -50,7 +53,8 @@ exports.getAllPosts = async (req, res) => {
 
 
 exports.addPost = async (req,res) => {
-    try {
+  const pictures = []
+    // try {
         if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
@@ -60,7 +64,6 @@ exports.addPost = async (req,res) => {
         }
       
         if (!req.files || req.files === 'undefined') {
-          let pictures = []
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
                 message: 'Pictures are mendatory'
@@ -68,17 +71,26 @@ exports.addPost = async (req,res) => {
             return
         } else {
           
-        pictures = []
         for (let i = 0; i < req.files.length; i++) {
-          let picture = {
-            data: req.files[i].buffer,
-            contentType: req.files[i].mimetype,
-            filename: Date.now() + req.files[i].originalname
-          }
-          pictures.push(picture)
-        }
-        }
+          const image = req.files[i]
+          const resize = await sharp(image.buffer).resize({ width: 500}).jpeg({ quality: 80 })
 
+          const formData = new FormData()
+          formData.append('image', resize, {
+            contentType: image.mimetype,
+            filename: image.originalname
+          }
+          )
+  
+        await nodeFetch('https://images.kalanso.top/image/?api=IZFRYR6C', {
+          method: 'POST',
+          body: formData,
+        }).then(res => res.json())
+        .then(data => {
+        pictures.push('https://images.kalanso.top/' + data.filename)
+        })
+        }
+      }
         const post = new Post({
           ...req.body,
           created_by: req.user.userId,
@@ -106,13 +118,13 @@ exports.addPost = async (req,res) => {
         }
     })
  
-    } catch (e) {
-        res.status(500).send({
-            errorCode: 'SERVER_ERROR',
-            message: 'An error occurred while adding the post'
-        })
-        return
-}
+//     } catch (e) {
+//         res.status(500).send({
+//             errorCode: 'SERVER_ERROR',
+//             message: 'An error occurred while adding the post'
+//         })
+//         return
+// }
 }
 
 
