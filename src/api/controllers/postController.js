@@ -54,7 +54,7 @@ exports.getAllPosts = async (req, res) => {
 
 exports.addPost = async (req,res) => {
   const pictures = []
-    // try {
+    try {
         if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
             res.status(400).send({
                 errorCode: 'MISSING_PARAMETERS',
@@ -117,14 +117,13 @@ exports.addPost = async (req,res) => {
             return
         }
     })
- 
-//     } catch (e) {
-//         res.status(500).send({
-//             errorCode: 'SERVER_ERROR',
-//             message: 'An error occurred while adding the post'
-//         })
-//         return
-// }
+    } catch (e) {
+        res.status(500).send({
+            errorCode: 'SERVER_ERROR',
+            message: 'An error occurred while adding the post'
+        })
+        return
+}
 }
 
 
@@ -179,7 +178,7 @@ exports.deletePost = async (req, res) => {
         })
         return
       }
-      Post.findByIdAndRemove(req.params.id, (err, post) => {
+      Post.findByIdAndRemove(req.params.id, async (err, post) => {
         if (err) {
           res.status(500).send({
             errorCode: 'SERVER_ERROR',
@@ -195,6 +194,20 @@ exports.deletePost = async (req, res) => {
             })
             return
           }
+          const user = await User.findById(post.created_by)
+          const removeIndex = user.posts.indexOf(post._id)
+          user.posts.splice(removeIndex, 1)
+          await user.save()
+
+          for (let i = 0; i < post.pictures.length; i++) {
+            const url = post.pictures[i]
+            const image = url.split('/')[5]
+            await nodeFetch('https://images.kalanso.top/image/?api=IZFRYR6C', {
+              method: 'DELETE',
+              body: JSON.stringify({image: image}),
+            })
+          }
+
           res.status(200).send({
             message: 'Post deleted successfully',
           })
@@ -449,7 +462,7 @@ exports.mostLike = async (req, res) => {
         {$sort: {count: -1}},
         {$limit: 1}
     ])
-    if (post === null || post.length === 0) {
+    if (post === undefined || post.length === 0) {
       res.status(400).send({
         errorCode: 'CANNOT_FIND_POST',
         message: "Couldn't find the post"
