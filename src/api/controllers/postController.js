@@ -20,6 +20,7 @@ exports.getAllPosts = async (req, res) => {
     try {
         Post.find()
         .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
+        .populate("reports", { username: 1, city: 1, country: 1, created_at: 1,})
         .skip(limit * page - limit)
         .limit(limit)
         .sort({created_at: -1})
@@ -51,8 +52,8 @@ exports.getAllPosts = async (req, res) => {
     }
 } 
 
-
 exports.addPost = async (req,res) => {
+
   const pictures = []
     try {
         if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
@@ -125,7 +126,6 @@ exports.addPost = async (req,res) => {
         return
 }
 }
-
 
 exports.getPostById = async (req, res) => {
     try {
