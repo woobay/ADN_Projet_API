@@ -12,7 +12,8 @@ const postSchema = new mongoose.Schema({}).add({
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true},
+        required: true,
+        default: '123'},
     followers: [{
         username: {type: String, required: true},
         user_id: {type: String, required: true},
