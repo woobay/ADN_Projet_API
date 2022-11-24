@@ -33,8 +33,6 @@ exports.getAllPosts = async (req, res) => {
                 return
             } else {
 
-
-
                 res.status(200).send({
                     message: 'POST_RETRIEVED_SUCCESSFULLY',
                     post,
@@ -98,7 +96,6 @@ exports.addPost = async (req,res) => {
           pictures: pictures
 
         })
-
 
         post.save(async (err, post) => {
             if (err) {
@@ -367,7 +364,6 @@ exports.getPostByUser = async (req, res) => {
     return
     }
 
-
 } 
 
 exports.reportPost = async (req, res) => {
@@ -400,6 +396,7 @@ exports.reportPost = async (req, res) => {
               await post.save()
               res.status(200).send({
               message: 'POST_REPORTED_SUCCESSFULLY',
+              post
     })
     return
     }
@@ -442,6 +439,7 @@ exports.removeReport = async (req, res) => {
               await post.save()
               res.status(200).send({
               message: 'POST_REPORT_REMOVED_SUCCESSFULLY',
+              post
     })
     return
     }
