@@ -460,6 +460,7 @@ exports.mostLike = async (req, res) => {
         {$sort: {count: -1}},
         {$limit: 1}
     ])
+    
     if (post === undefined || post.length === 0) {
       res.status(400).send({
         errorCode: 'CANNOT_FIND_POST',
@@ -469,6 +470,7 @@ exports.mostLike = async (req, res) => {
     }
 
     const mostLikedPost = await Post.findById(post[0]._id)
+    .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
     if (mostLikedPost === null) {
       res.status(400).send({
         errorCode: 'CANNOT_FIND_POST',
