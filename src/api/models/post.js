@@ -8,7 +8,7 @@ const postSchema = new mongoose.Schema({}).add({
         }],
     resume: {type: String, required: true},
     description: {type: String, required: true},
-    city: {type: String, optional: true},
+    country: {type: String, optional: true},
     created_at: {type: Date, required: true, default: Date.now},
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
@@ -23,7 +23,12 @@ const postSchema = new mongoose.Schema({}).add({
         username: {type: String, required: true},
         comment: {type: String, required: true},
     }],
-    reports: [{type: String}],
+    reports: [
+        {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        }
+    ],
 })
 
 module.exports = mongoose.model('Post', postSchema)

@@ -25,7 +25,7 @@ exports.AddComment = async (req, res) => {
             })
             return
         } else {
-                post.comments.push(comment)
+                post.comments.unshift(comment)
                 await post.save()
                 res.status(200).send({
                     message: 'FOLLOWED_SUCCESSFULLY',

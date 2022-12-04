@@ -187,7 +187,7 @@ exports.searchUsers = async (req , res) => {
 
       const amtOfUsers = await User.countDocuments({[key]: {$regex: keyWord, $options: 'i'}})
 
-      User.find({ [key] : keyWord })
+      User.find({ [key] : {$regex: keyWord, $options: 'i'} })
       .skip(limit * page - limit)
       .limit(limit)
       .sort({created_at: -1})

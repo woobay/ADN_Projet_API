@@ -20,6 +20,7 @@ exports.getAllPosts = async (req, res) => {
     try {
         Post.find()
         .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
+        .populate("reports", { username: 1, city: 1, country: 1, created_at: 1,})
         .skip(limit * page - limit)
         .limit(limit)
         .sort({created_at: -1})
@@ -31,8 +32,6 @@ exports.getAllPosts = async (req, res) => {
                 })
                 return
             } else {
-
-
 
                 res.status(200).send({
                     message: 'POST_RETRIEVED_SUCCESSFULLY',
@@ -51,8 +50,8 @@ exports.getAllPosts = async (req, res) => {
     }
 } 
 
-
 exports.addPost = async (req,res) => {
+
   const pictures = []
     try {
         if (!req.body.title || !req.body.description || !req.body.created_by || !req.body.resume) {
@@ -98,7 +97,6 @@ exports.addPost = async (req,res) => {
 
         })
 
-
         post.save(async (err, post) => {
             if (err) {
               res.status(500).send({
@@ -125,7 +123,6 @@ exports.addPost = async (req,res) => {
         return
 }
 }
-
 
 exports.getPostById = async (req, res) => {
     try {
@@ -367,7 +364,6 @@ exports.getPostByUser = async (req, res) => {
     return
     }
 
-
 } 
 
 exports.reportPost = async (req, res) => {
@@ -400,6 +396,7 @@ exports.reportPost = async (req, res) => {
               await post.save()
               res.status(200).send({
               message: 'POST_REPORTED_SUCCESSFULLY',
+              post
     })
     return
     }
@@ -442,6 +439,7 @@ exports.removeReport = async (req, res) => {
               await post.save()
               res.status(200).send({
               message: 'POST_REPORT_REMOVED_SUCCESSFULLY',
+              post
     })
     return
     }
@@ -462,6 +460,7 @@ exports.mostLike = async (req, res) => {
         {$sort: {count: -1}},
         {$limit: 1}
     ])
+    
     if (post === undefined || post.length === 0) {
       res.status(400).send({
         errorCode: 'CANNOT_FIND_POST',
@@ -471,6 +470,7 @@ exports.mostLike = async (req, res) => {
     }
 
     const mostLikedPost = await Post.findById(post[0]._id)
+    .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
     if (mostLikedPost === null) {
       res.status(400).send({
         errorCode: 'CANNOT_FIND_POST',
