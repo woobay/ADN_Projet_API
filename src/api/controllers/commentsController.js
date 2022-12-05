@@ -60,7 +60,7 @@ exports.deleteComment = async (req,res) => {
             })
             return
         } else {
-            if (!post.comments.some(x => x.user_id === req.user.userId)) {
+            if (!post.comments.some(x => x.user_id === req.user.userId) || !req.user.isAdmin) {
                 res.status(400).send({ 
                     errorCode: 'NO_COMMENT',
                     message: 'No comment on this post'
@@ -69,7 +69,7 @@ exports.deleteComment = async (req,res) => {
 
             } else {
             const removeIndex = post.comments.findIndex(x => x._id.toString() === req.body.comment_id)
-            if (post.comments[removeIndex].user_id.toString() !== req.user.userId) {
+            if (post.comments[removeIndex].user_id.toString() !== req.user.userId || !req.user.isAdmin) {
                 res.status(400).send({
                     errorCode: 'NOT_AUTHORIZED',
                     message: 'Not authorized to delete this comment'
