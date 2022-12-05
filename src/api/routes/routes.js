@@ -10,12 +10,13 @@ const upload = require('../middleware/upload')
 
 // Routes for posts
 router.post('/post/newpost',IsAuth, upload.any('pictures'), postController.addPost)
-router.put('/post/update/:id', IsAuth, postController.updatePost)
+router.put('/post/update/:id', IsAuth, upload.any('pictures'), postController.updatePost)
 router.delete('/post/delete/:id', IsAuth, IsAdmin, postController.deletePost)
 router.get('/post/search/:keyword', postController.searchByTitle)
 router.get('/post/byUser/:id', IsAuth, postController.getPostByUser)
 router.get('/post/onePost/:id', postController.getPostById)
 router.get('/post/allPost', postController.getAllPosts)
+router.delete('/post/image', IsAuth, postController.deleteImage)
 
 // Routes for comments
 router.post('/post/comment',IsAuth, commentsController.AddComment)
