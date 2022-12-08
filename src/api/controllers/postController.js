@@ -96,7 +96,24 @@ exports.addPost = async (req,res) => {
           pictures: pictures
 
         })
+        await nodeFetch('https://discord.com/api/webhooks/1050448126332383313/oLGOgZi9VXXNBcJUxLhfx9wq8guXT7wrUQjaBuo0Znng_0zHhybimmLFgpa6WhdrAIMZ', 
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "username": req.user.username,
+            'embeds': [
+              {
+                'title': req.body.title,
+                'description': req.body.description,
+                'image': {
+                'url': pictures[0],
+                },
 
+
+          }]})})
         post.save(async (err, post) => {
             if (err) {
               res.status(500).send({
@@ -221,6 +238,8 @@ exports.deletePost = async (req, res) => {
   }
 
 exports.updatePost = async (req,res) => {
+    let pictures = []
+    let newPictures = []
     try {
        if (!req.params.id || req.params.id === 'undefined') {
         res.status(400).send({
@@ -231,9 +250,62 @@ exports.updatePost = async (req,res) => {
       }
 
     const post = await Post.findByIdAndUpdate(req.params.id)
-      if (req.user.userId === post.created_by.toString()) {
+    
+    
+      if (req.user.userId === post.created_by.toString() || req.user.isAdmin) {
+        if (req.files && post.pictures.length <= 0) {
+          for (let i = 0; i < req.files.length; i++) {
+          const image = req.files[i]
+          const resize = sharp(image.buffer).resize({ width: 1000}).jpeg({ quality: 90 })
 
-        Post.findByIdAndUpdate(req.params.id, req.body, {new: true} ,(err, post) => {
+          const formData = new FormData()
+          formData.append('image', resize, {
+            contentType: image.mimetype,
+            filename: image.originalname
+          }
+          )
+  
+        await nodeFetch('https://images.kalanso.top/image/?api=IZFRYR6C', {
+          method: 'POST',
+          body: formData,
+        }).then(res => res.json())
+        .then(data => {
+        pictures.push('https://images.kalanso.top/' + data.filename)
+        newPictures = pictures
+        })
+        }
+      } else if (req.files && post.pictures.length > 0) {
+           for (let i = 0; i < req.files.length; i++) {
+          const image = req.files[i]
+          const resize = sharp(image.buffer).resize({ width: 1000}).jpeg({ quality: 90 })
+
+          const formData = new FormData()
+          formData.append('image', resize, {
+            contentType: image.mimetype,
+            filename: image.originalname
+          }
+          )
+  
+        await nodeFetch('https://images.kalanso.top/image/?api=IZFRYR6C', {
+          method: 'POST',
+          body: formData,
+        }).then(res => res.json())
+        .then(data => {
+        pictures.push('https://images.kalanso.top/' + data.filename)
+        newPictures = post.pictures.concat(pictures)
+        })
+        }
+        
+      } else {
+        newPictures = post.pictures
+      }
+      
+
+
+        Post.findByIdAndUpdate(req.params.id, {
+          ...req.body,
+          pictures: newPictures}
+          , {new: true} ,(err, post) => {
 
         if (err) {
           res.status(500).send({
@@ -257,9 +329,9 @@ exports.updatePost = async (req,res) => {
       }
     }
   )} else {
-    res.status(500).send({
+    res.status(403).send({
       errorCode: 'SERVER_ERROR',
-      message: 'An error occurred while deleting post'
+      message: 'Must be the owner of the post to update it'
     })
     return
   }
@@ -488,6 +560,57 @@ exports.mostLike = async (req, res) => {
     res.status(500).send({
       errorCode: 'SERVER_ERROR',
       message: 'An error occurred while retrieving the most liked post'
+    })
+    return
+  }
+}
+
+exports.deleteImage = async (req, res) => {
+  try {
+    if (!req.body.post_id || req.body.post_id === 'undefined') {
+        res.status(400).send({
+          errorCode: 'MISSING_PARAMETERS',
+          message: 'Missing post id'
+        })
+        return
+      }
+
+    const post = await Post.findById(req.body.post_id)
+    if (post === null) {
+      res.status(400).send({
+        errorCode: 'CANNOT_FIND_POST',
+        message: "Couldn't find the post"
+      })
+      return
+    } else {
+      if (post.created_by.toString() == req.user.userId || !req.user.isAdmin) {
+        res.status(400).send({
+          errorCode: 'NOT_AUTHORIZED',
+          message: "You're not authorized to delete this post"
+        })
+        return
+      }
+      const index = post.pictures.indexOf(req.body.url)
+      post.pictures.splice(index, 1)
+
+      const url = req.body.url
+      const image = url.split('/')[5]
+      await nodeFetch('https://images.kalanso.top/image/?api=IZFRYR6C', {
+        method: 'DELETE',
+        body: JSON.stringify({image: image}),
+      })
+    }
+    await post.save()
+    res.status(200).send({
+      message: 'IMAGE_DELETED_SUCCESSFULLY',
+      post
+    })
+    return
+    
+  } catch (e) {
+    res.status(500).send({
+      errorCode: 'SERVER_ERROR',
+      message: 'An error occurred while deleting the image'
     })
     return
   }
