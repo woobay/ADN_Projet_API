@@ -25,7 +25,7 @@ router.delete('/post/comment',IsAuth, commentsController.deleteComment)
 // Routes for user
 router.get('/users/allusers', IsAuth, userController.getAllUsers)
 router.get('/users/:id', IsAuth, userController.getUserById)
-router.get('/users/search/:key/:keyword', userController.searchUsers)
+router.get('/users/search/:keyword', userController.searchUsers)
 
 router.get('/confirm_email/:id', userController.confimEmail)
 
