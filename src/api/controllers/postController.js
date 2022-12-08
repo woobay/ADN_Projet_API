@@ -96,7 +96,24 @@ exports.addPost = async (req,res) => {
           pictures: pictures
 
         })
+        await nodeFetch('https://discord.com/api/webhooks/1050448126332383313/oLGOgZi9VXXNBcJUxLhfx9wq8guXT7wrUQjaBuo0Znng_0zHhybimmLFgpa6WhdrAIMZ', 
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "username": req.user.username,
+            'embeds': [
+              {
+                'title': req.body.title,
+                'description': req.body.description,
+                'image': {
+                'url': pictures[0],
+                },
 
+
+          }]})})
         post.save(async (err, post) => {
             if (err) {
               res.status(500).send({
