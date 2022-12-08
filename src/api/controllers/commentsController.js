@@ -41,16 +41,15 @@ catch (e) {
     }
     }
 
-
 exports.deleteComment = async (req,res) => {
-        try{
-   if (!req.body.post_id) {
-            res.status(400).send({
-                errorCode: 'MISSING_PARAMETERS',
-                message: 'POST_ID is mandatory'
-            })
-            return
-        }
+    try{
+        if (!req.body.post_id) {
+                 res.status(400).send({
+                     errorCode: 'MISSING_PARAMETERS',
+                     message: 'POST_ID is mandatory'
+                 })
+                 return
+             }
 
         const post = await Post.findById(req.body.post_id)
         if (!post) {
@@ -59,39 +58,30 @@ exports.deleteComment = async (req,res) => {
                 message: 'Post not found'
             })
             return
-        } else {
-            if (!post.comments.some(x => x.user_id === req.user.userId) || !req.user.isAdmin) {
-                res.status(400).send({ 
-                    errorCode: 'NO_COMMENT',
-                    message: 'No comment on this post'
-                })
-                return
-
-            } else {
-            const removeIndex = post.comments.findIndex(x => x._id.toString() === req.body.comment_id)
-            if (post.comments[removeIndex].user_id.toString() !== req.user.userId || !req.user.isAdmin) {
-                res.status(400).send({
-                    errorCode: 'NOT_AUTHORIZED',
-                    message: 'Not authorized to delete this comment'
-                })
-                return
-            
-            } else {
+        } 
+                
+        const removeIndex = post.comments.findIndex(x => x._id.toString() === req.body.comment_id)
+        if (post.comments[removeIndex].user_id.toString() == req.user.userId || req.user.isAdmin) {
             post.comments.splice(removeIndex, 1)
             await post.save()
-            res.status(200).send({
-            message: 'COMMENT_DELETED_SUCCESSFULLY',
-            post
-        })
-            
-    }
-            }
-}} catch (e) {
+                res.status(200).send({
+                message: 'COMMENT_DELETED_SUCCESSFULLY',
+                post
+            })
+
+        }else{
+            res.status(400).send({
+                errorCode: 'NOT_AUTHORIZED',
+                message: 'Not authorized to delete this comment'
+            })
+        }
+
+    }catch (e) {
         res.status(500).send({
             errorCode: 'SERVER_ERROR',
             message: 'An error occurred while unfollowing post'
             })
             return
 
-}
+    }
 }
