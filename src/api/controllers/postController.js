@@ -252,7 +252,7 @@ exports.updatePost = async (req,res) => {
     const post = await Post.findById(req.params.id)
 
       if (req.user.userId === post.created_by.toString() || req.user.isAdmin) {
-        if (req.files && post.pictures.length <= 0) {
+        if (req.files.length > 0 && post.pictures.length <= 0) {
           for (let i = 0; i < req.files.length; i++) {
           const image = req.files[i]
           const resize = sharp(image.buffer).resize({ width: 1000}).jpeg({ quality: 90 })
@@ -273,8 +273,8 @@ exports.updatePost = async (req,res) => {
         newPictures = pictures
         })
         }
-      } else if (req.files && post.pictures.length > 0) {
-           for (let i = 0; i < req.files.length; i++) {
+      } else if (req.files.length > 0 && post.pictures.length > 0) {
+          for (let i = 0; i < req.files.length; i++) {
           const image = req.files[i]
           const resize = sharp(image.buffer).resize({ width: 1000}).jpeg({ quality: 90 })
 
