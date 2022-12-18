@@ -249,11 +249,10 @@ exports.updatePost = async (req,res) => {
         return
       }
 
-    const post = await Post.findByIdAndUpdate(req.params.id)
-    
-    
+    const post = await Post.findById(req.params.id)
+
       if (req.user.userId === post.created_by.toString() || req.user.isAdmin) {
-        if (req.files && post.pictures.length <= 0) {
+        if (req.files.length > 0 && post.pictures.length <= 0) {
           for (let i = 0; i < req.files.length; i++) {
           const image = req.files[i]
           const resize = sharp(image.buffer).resize({ width: 1000}).jpeg({ quality: 90 })
@@ -274,8 +273,8 @@ exports.updatePost = async (req,res) => {
         newPictures = pictures
         })
         }
-      } else if (req.files && post.pictures.length > 0) {
-           for (let i = 0; i < req.files.length; i++) {
+      } else if (req.files.length > 0 && post.pictures.length > 0) {
+          for (let i = 0; i < req.files.length; i++) {
           const image = req.files[i]
           const resize = sharp(image.buffer).resize({ width: 1000}).jpeg({ quality: 90 })
 
@@ -300,14 +299,14 @@ exports.updatePost = async (req,res) => {
         newPictures = post.pictures
       }
       
-
-
-        Post.findByIdAndUpdate(req.params.id, {
+      Post.findByIdAndUpdate(req.params.id, {
           ...req.body,
+          created_by: req.user.userId,
           pictures: newPictures}
           , {new: true} ,(err, post) => {
 
         if (err) {
+       
           res.status(500).send({
             errorCode: 'SERVER_ERROR',
             message: 'An error occurred while deleting post'
@@ -576,30 +575,25 @@ exports.deleteImage = async (req, res) => {
       }
 
     const post = await Post.findById(req.body.post_id)
-    if (post === null) {
-      res.status(400).send({
-        errorCode: 'CANNOT_FIND_POST',
-        message: "Couldn't find the post"
-      })
-      return
-    } else {
-      if (post.created_by.toString() == req.user.userId || !req.user.isAdmin) {
-        res.status(400).send({
-          errorCode: 'NOT_AUTHORIZED',
-          message: "You're not authorized to delete this post"
-        })
-        return
-      }
+    if (!post) {
+            res.status(404).send({
+                errorCode: 'POST_NOT_FOUND',
+                message: 'Post not found'
+            })
+            return
+        }
+    
       const index = post.pictures.indexOf(req.body.url)
-      post.pictures.splice(index, 1)
+     
 
+      post.pictures.splice(index, 1)
       const url = req.body.url
       const image = url.split('/')[5]
       await nodeFetch('https://images.kalanso.top/image/?api=IZFRYR6C', {
         method: 'DELETE',
         body: JSON.stringify({image: image}),
       })
-    }
+    
     await post.save()
     res.status(200).send({
       message: 'IMAGE_DELETED_SUCCESSFULLY',
