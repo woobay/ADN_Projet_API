@@ -24,8 +24,8 @@ var transport = nodemailer.createTransport({
         subject: `Bienvenue ${name} Ami Boycotteur!!`,
         html: `<h1>Confirmation du Couriel</h1>
             <p>
-            blablalbal.................
-            <a href=${confir_URL}>Confirmation</a>
-            </p>`
+            Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer    une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée. Généralement, on utilise un texte en faux latin, le Lorem ipsum ou Lipsum
+            </p>
+            <a style="font-size:30px; color: bleu" href=${confir_URL}>CLIQUEZ-ICI</a>`
     }).catch(err => console.log(err))
   }
