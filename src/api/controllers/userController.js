@@ -96,10 +96,9 @@ exports.confimEmail = async (req, res) => {
           })
           return
         }
-        res.status(200).send({
-          message: 'USER_RETRIEVED_SUCCESSFULLY_UPDATE',
-          user
-        })
+        res.status(200).send(
+          '<div style="text-align:center; margin-top:300px"><h1 style="font-size: 60px; color:blue">Confirmation de email bien reçu!</h1></div>'
+        )
         return
       }
     })
