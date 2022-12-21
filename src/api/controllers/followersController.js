@@ -16,6 +16,7 @@ exports.addFollower = async (req,res) => {
         }
     
         const post = await Post.findById(req.body.post_id)
+        .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
         if (!post) {
             res.status(404).send({
                 errorCode: 'POST_NOT_FOUND',
@@ -57,6 +58,7 @@ try{
         }
 
         const post = await Post.findById(req.body.post_id)
+        .populate("created_by", {_id: 1, username: 1,  email: 1, posts: 1,})
         if (!post) {
             res.status(404).send({
                 errorCode: 'POST_NOT_FOUND',
